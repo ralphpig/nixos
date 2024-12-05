@@ -1,35 +1,38 @@
 # Guide
 #    https://qfpl.io/posts/installing-nixos/
-
 # Edit this configuration file to define what should be installed on
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
-
-{ config, lib, pkgs, ... }:
 {
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
   imports = [
-	# Include the results of the hardware scan.
-  	./hardware-configuration.nix
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    ./luks.nix
   ];
 
   boot = {
-  	# Use the systemd-boot EFI boot loader.
-  	loader.systemd-boot.enable = true;
-  	loader.efi.canTouchEfiVariables = true;
-	
-  	# LUKS Encryption
-  	initrd.luks.devices = {
-    		root = { 
-      			device = "/dev/disk/by-uuid/cb0fa65e-e283-47f9-8db0-908ddad28199";
-      			preLVM = true;
-    		};
-  	};
+    loader = {
+      efi.canTouchEfiVariables = true;
+
+      # systemd-boot.enable = true;
+      grub = {
+        enable = true;
+        device = "nodev";
+        efiSupport = true;
+        useOSProber = true;
+      };
+    };
   };
 
   networking = {
-  	hostName = "ralphpig-nixos"; # Define your hostname.
+    hostName = "ralphpig-nixos"; # Define your hostname.
 
-  	networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+    networkmanager.enable = true; # Easiest to use and most distros use this by default.
   };
 
   # Set your time zone.
@@ -43,50 +46,34 @@
   #   useXkbConfig = true; # use xkb.options in tty.
   # };
   environment.sessionVariables = rec {
-	XDG_CACHE_HOME  = "$HOME/.cache";
-	XDG_CONFIG_HOME = "$HOME/.config";
-	XDG_DATA_HOME   = "$HOME/.local/share";
-	XDG_STATE_HOME  = "$HOME/.local/state";
+    XDG_CACHE_HOME = "$HOME/.cache";
+    XDG_CONFIG_HOME = "$HOME/.config";
+    XDG_DATA_HOME = "$HOME/.local/share";
+    XDG_STATE_HOME = "$HOME/.local/state";
   };
 
   # Services
   services.xserver = {
-	enable = true;
-  	# Enable the GNOME Desktop Environment.
-  	displayManager.gdm.enable = true;
-  	desktopManager.gnome.enable = true;
-  
-	displayManager.sessionCommands = ''
-		xset r rate 200 30
-	'';
+    enable = true;
+    # Enable the GNOME Desktop Environment.
+    displayManager.gdm.enable = true;
+    desktopManager.gnome.enable = true;
 
-  	# Configure keymap in X11
-  	xkb.layout = "us";
-  	# xkb.options = "eurosign:e,caps:escape";
+    displayManager.sessionCommands = ''
+      xset r rate 200 30
+    '';
+
+    # Configure keymap in X11
+    xkb.layout = "us";
+    # xkb.options = "eurosign:e,caps:escape";
   };
 
   services.printing.enable = true;
 
-  # hardware.pulseaudio.enable = true;
-  # OR
   services.pipewire = {
     enable = true;
     pulse.enable = true;
   };
-
-  # ZSH
-  programs.zsh.enable = true;
-  
-  users = {
-  	defaultUserShell = pkgs.zsh;
-
-  	users.ralphpig = {
-    		isNormalUser = true;
-    		extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-    		# packages = with pkgs; [];
-  	};
-  };
-
 
   # Packages
   nixpkgs.config.allowUnfree = true;
@@ -96,8 +83,9 @@
 
   environment.systemPackages = with pkgs; [
     home-manager
+
     # Tools
-    vim 
+    neovim
     wget
     git
     htop
@@ -110,10 +98,11 @@
     docker
     oh-my-zsh
     yamlfmt
+    wl-clipboard
 
     # Fonts
     jetbrains-mono
-    
+
     # Applications
     microsoft-edge
     zed-editor
@@ -128,6 +117,22 @@
     bambu-studio
     libreoffice
   ];
+
+  # Program Config
+  programs.zsh = {
+    enable = true;
+  };
+
+  # Users
+  users = {
+    defaultUserShell = pkgs.zsh;
+
+    users.ralphpig = {
+      isNormalUser = true;
+      extraGroups = ["wheel"]; # Enable ‘sudo’ for the user.
+      # packages = with pkgs; [];
+    };
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -172,4 +177,3 @@
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
   system.stateVersion = "24.11"; # Did you read the comment?
 }
-
