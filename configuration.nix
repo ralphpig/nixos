@@ -82,6 +82,7 @@
     "openssl-1.1.1w" # for sublime4
   ];
 
+
   environment.systemPackages = with pkgs; [
     home-manager
 
@@ -96,7 +97,6 @@
     bind
     nodejs_20
     yarn
-    docker
     oh-my-zsh
     yamlfmt
     wl-clipboard
@@ -124,14 +124,18 @@
     enable = true;
   };
 
+  virtualisation.docker.enable = true;
+
   # Users
   users = {
     defaultUserShell = pkgs.zsh;
 
     users.ralphpig = {
       isNormalUser = true;
-      extraGroups = ["wheel"]; # Enable ‘sudo’ for the user.
-      # packages = with pkgs; [];
+      extraGroups = [
+        "wheel"
+        "docker"
+      ];
     };
   };
 
