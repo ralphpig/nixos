@@ -9,6 +9,9 @@
   # Load nvidia driver for Xorg and Wayland
   services.xserver.videoDrivers = ["nvidia"];
 
+  # Allow GPU for plymouth in stage 1
+  # boot.initrd.availableKernelModules = ["nvidia"];
+
   hardware.nvidia = {
 
     # Modesetting is required.

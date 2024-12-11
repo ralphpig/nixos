@@ -32,11 +32,11 @@
     initrd.systemd.enable = true;
     plymouth = {
       enable = true;
-      theme = "cross_hud";
+      theme = "square";
       themePackages = with pkgs; [
         # By default we would install all themes
         (adi1090x-plymouth-themes.override {
-          selected_themes = [ "cross_hud" ];
+          selected_themes = [ "square" ];
         })
       ];
     };
@@ -52,6 +52,8 @@
       "rd.systemd.show_status=false"
       "rd.udev.log_level=3"
       "udev.log_priority=3"
+      # Force plymouth to use simpledrm to avoid 8 second timeout waiting for GPU
+      "plymouth.use-simpledrm"
     ];
   };
 
