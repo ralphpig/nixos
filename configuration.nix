@@ -95,6 +95,16 @@
     xkb.layout = "us";
     # xkb.options = "eurosign:e,caps:escape";
   };
+  ## Some displayManager conf has been renamed from xserver.displayManager
+  services.displayManager = {
+    # Autologin
+    autoLogin.enable = true;
+    autoLogin.user = "ralphpig";
+  };
+
+  # Autologin Workaround: https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
+  systemd.services."getty@tty1".enable = false;
+  systemd.services."autovt@tty1".enable = false;
 
   services.printing.enable = true;
 
