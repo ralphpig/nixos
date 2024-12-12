@@ -124,36 +124,38 @@
     home-manager
 
     # Tools
-    neovim
-    wget
+    bind
     git
     htop
-    zsh
     jq
-    ripgrep
-    bind
-    nodejs_20
-    yarn
+    neovim
     oh-my-zsh
-    yamlfmt
+    ripgrep
+    wget
     wl-clipboard
+    yamlfmt
+    zsh
 
     # Fonts
     jetbrains-mono
 
-    # Applications
-    microsoft-edge
-    zed-editor
-    sublime4
-    sublime-merge
-    pritunl-client
-    bambu-studio
-    bitwarden-cli
+    # Work
+    awscli
     glab
     insomnia
-    spotify
+    nodejs_20
+    postgresql
+    sublime-merge
+    sublime4
+    yarn
+    zed-editor
+
+    # Applications
     bambu-studio
+    bitwarden-cli
     libreoffice
+    microsoft-edge
+    spotify
   ];
 
   # Program Config
