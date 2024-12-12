@@ -155,6 +155,8 @@
     bitwarden-cli
     libreoffice
     microsoft-edge
+    ## PWAs try to exec `microsoft-edge-stable`, so add an alias for it
+    (writeShellScriptBin "microsoft-edge-stable" "exec -a $0 ${microsoft-edge}/bin/microsoft-edge $@")
     spotify
   ];
 
