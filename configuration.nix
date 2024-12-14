@@ -141,6 +141,7 @@
 
     # Work
     awscli
+    deno
     glab
     insomnia
     nodejs_20
