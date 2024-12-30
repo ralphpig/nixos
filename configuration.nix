@@ -16,6 +16,12 @@
     ./gpu.nix
   ];
 
+  system.autoUpgrade = {
+    enable  = true;
+    # Don't think I want reboot while I'm in the middle of work
+    # I also shutdown and reboot every day
+    # allowReboot  = true;
+  };
   boot = {
     loader = {
       efi.canTouchEfiVariables = true;
