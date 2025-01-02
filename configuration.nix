@@ -112,7 +112,14 @@
   systemd.services."getty@tty1".enable = false;
   systemd.services."autovt@tty1".enable = false;
 
+  # Printing
   services.printing.enable = true;
+  # IPP Everywhere auto-discovery
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
 
   services.pipewire = {
     enable = true;
@@ -137,6 +144,7 @@
     neovim
     oh-my-zsh
     ripgrep
+    shfmt
     wget
     wl-clipboard
     yamlfmt
@@ -149,6 +157,7 @@
     awscli
     deno
     glab
+    husky
     insomnia
     nodejs_20
     postgresql
