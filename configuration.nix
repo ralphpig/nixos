@@ -69,8 +69,12 @@
     networkmanager.enable = true; # Easiest to use and most distros use this by default.
   };
 
-  # Set your time zone.
-  time.timeZone = "America/New_York";
+  time = {
+    timeZone = "America/New_York";
+
+    # Windows expect local time
+    hardwareClockInLocalTime = true;
+  };
 
   # Select internationalisation properties.
   # i18n.defaultLocale = "en_US.UTF-8";
@@ -154,11 +158,13 @@
     jetbrains-mono
 
     # Work
-    awscli
+    awscli2
     deno
     glab
     husky
     insomnia
+    kubectl
+    kubeseal
     nodejs_20
     postgresql
     sublime-merge
