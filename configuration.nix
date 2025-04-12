@@ -32,6 +32,12 @@
         device = "nodev";
         efiSupport = true;
         useOSProber = true;
+        configurationLimit = 10;
+        extraConfig = ''
+          # Wait for selection
+          set timeout=-1
+        '';
+        fontSize = 24;
       };
     };
 
@@ -165,6 +171,8 @@
     insomnia
     kubectl
     kubeseal
+    mongodb-compass
+    mongodb-tools
     nodejs_20
     postgresql
     sublime-merge
@@ -180,6 +188,7 @@
     ## PWAs try to exec `microsoft-edge-stable`, so add an alias for it
     (writeShellScriptBin "microsoft-edge-stable" "exec -a $0 ${microsoft-edge}/bin/microsoft-edge $@")
     spotify
+    zoom-us
   ];
 
   # Program Config
