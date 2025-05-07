@@ -17,7 +17,8 @@
   ];
 
   system.autoUpgrade = {
-    enable  = true;
+    # Everything lags on first startup while this is working (I think)
+    enable  = false;
     # Don't think I want reboot while I'm in the middle of work
     # I also shutdown and reboot every day
     # allowReboot  = true;
@@ -155,6 +156,7 @@
     oh-my-zsh
     ripgrep
     shfmt
+    sql-formatter
     wget
     wl-clipboard
     yamlfmt
