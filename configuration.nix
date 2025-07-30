@@ -153,6 +153,7 @@
     htop
     jq
     neovim
+    nixd
     oh-my-zsh
     ripgrep
     shfmt
@@ -162,11 +163,9 @@
     yamlfmt
     zsh
 
-    # Fonts
-    jetbrains-mono
-
     # Work
     awscli2
+    eslint
     deno
     glab
     husky
@@ -175,7 +174,7 @@
     kubeseal
     mongodb-compass
     mongodb-tools
-    nodejs_20
+    nodejs_22
     postgresql
     sublime-merge
     sublime4
@@ -185,6 +184,7 @@
     # Applications
     bambu-studio
     bitwarden-cli
+    gnome-tweaks
     libreoffice
     microsoft-edge
     ## PWAs try to exec `microsoft-edge-stable`, so add an alias for it
@@ -192,6 +192,142 @@
     spotify
     zoom-us
   ];
+
+  fonts = {
+    enableDefaultPackages = true;
+    packages = with pkgs; [
+      jetbrains-mono
+      lilex
+      (
+        iosevka.override {
+          set = "Ralphpig";
+          privateBuildPlan = ''
+            [buildPlans.IosevkaRalphpig]
+            family = "Iosevka Ralphpig"
+            spacing = "normal"
+            serifs = "sans"
+            noCvSs = true
+            exportGlyphNames = false
+
+            [buildPlans.IosevkaRalphpig.weights.Regular]
+            shape = 400
+            menu = 400
+            css = 400
+
+            [buildPlans.IosevkaRalphpig.weights.Bold]
+            shape = 700
+            menu = 700
+            css = 700
+
+            [buildPlans.IosevkaRalphpig.widths.Normal]
+            shape = 600
+            menu = 5
+            css = "normal"
+
+            [buildPlans.IosevkaRalphpig.slopes.Upright]
+            angle = 0
+            shape = "upright"
+            menu = "upright"
+            css = "normal"
+
+            [buildPlans.IosevkaRalphpig.slopes.Italic]
+            angle = 9.4
+            shape = "italic"
+            menu = "italic"
+            css = "italic"
+          '';
+        }
+      )
+      (
+        iosevka.override {
+          set = "RalphpigTerm";
+          privateBuildPlan = ''
+            [buildPlans.IosevkaRalphpigTerm]
+            family = "Iosevka Ralphpig Term"
+            spacing = "term"
+            serifs = "sans"
+            noCvSs = true
+            exportGlyphNames = false
+
+            [buildPlans.IosevkaRalphpigTerm.weights.Regular]
+            shape = 400
+            menu = 400
+            css = 400
+
+            [buildPlans.IosevkaRalphpigTerm.weights.Bold]
+            shape = 700
+            menu = 700
+            css = 700
+
+            [buildPlans.IosevkaRalphpigTerm.widths.Normal]
+            shape = 600
+            menu = 5
+            css = "normal"
+
+            [buildPlans.IosevkaRalphpigTerm.slopes.Upright]
+            angle = 0
+            shape = "upright"
+            menu = "upright"
+            css = "normal"
+
+            [buildPlans.IosevkaRalphpigTerm.slopes.Italic]
+            angle = 9.4
+            shape = "italic"
+            menu = "italic"
+            css = "italic"
+          '';
+        }
+      )
+      (
+        iosevka.override {
+          set = "RalphpigProportional";
+          privateBuildPlan = ''
+            [buildPlans.IosevkaRalphpigProportional]
+            family = "Iosevka Ralphpig Proportional"
+            spacing = "quasi-proportional"
+            serifs = "sans"
+            noCvSs = true
+            exportGlyphNames = false
+
+            [buildPlans.IosevkaRalphpigProportional.weights.Regular]
+            shape = 400
+            menu = 400
+            css = 400
+
+            [buildPlans.IosevkaRalphpigProportional.weights.Bold]
+            shape = 700
+            menu = 700
+            css = 700
+
+            [buildPlans.IosevkaRalphpigProportional.widths.Normal]
+            shape = 600
+            menu = 5
+            css = "normal"
+
+            [buildPlans.IosevkaRalphpigProportional.slopes.Upright]
+            angle = 0
+            shape = "upright"
+            menu = "upright"
+            css = "normal"
+
+            [buildPlans.IosevkaRalphpigProportional.slopes.Italic]
+            angle = 9.4
+            shape = "italic"
+            menu = "italic"
+            css = "italic"
+          '';
+        }
+      )
+    ];
+
+    fontconfig = {
+      defaultFonts = {
+        serif = [  "Iosevka Ralphpig Proportional" ];
+        sansSerif = [ "Iosevka Ralphpig Proportional" ];
+        monospace = [ "Iosevka Ralphpig" ];
+      };
+    };
+  };
 
   # Program Config
   programs.zsh = {
