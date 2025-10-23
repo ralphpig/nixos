@@ -8,7 +8,14 @@
   lib,
   pkgs,
   ...
-}: {
+}:
+let
+  # Bring in nixpkgs-unstable alongside your stable pkgs
+  unstable = import <nixpkgs-unstable> {
+    config = config.nixpkgs.config;
+  };
+in
+{
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -54,10 +61,10 @@
       ];
     };
 
-    # Enable "Silent Boot"
     consoleLogLevel = 0;
     initrd.verbose = false;
     kernelParams = [
+      # Enable "Silent Boot"
       "quiet"
       "splash"
       "boot.shell_on_fail"
@@ -153,6 +160,7 @@
     htop
     jq
     neovim
+    nil
     nixd
     oh-my-zsh
     ripgrep
@@ -179,7 +187,7 @@
     sublime-merge
     sublime4
     yarn
-    zed-editor
+    unstable.zed-editor
 
     # Applications
     bambu-studio
