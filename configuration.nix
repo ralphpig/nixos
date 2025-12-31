@@ -5,7 +5,6 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 {
   config,
-  lib,
   pkgs,
   ...
 }:
@@ -25,7 +24,7 @@ in
 
   system.autoUpgrade = {
     # Everything lags on first startup while this is working (I think)
-    enable  = false;
+    enable = false;
     # Don't think I want reboot while I'm in the middle of work
     # I also shutdown and reboot every day
     # allowReboot  = true;
@@ -78,9 +77,14 @@ in
   };
 
   networking = {
-    hostName = "ralphpig-nixos"; # Define your hostname.
+    hostName = "ralphpig-nixos";
 
-    networkmanager.enable = true; # Easiest to use and most distros use this by default.
+    networkmanager = {
+      enable = true;
+      plugins = with pkgs; [
+        networkmanager-openvpn
+      ];
+    };
   };
 
   time = {
@@ -91,13 +95,7 @@ in
   };
 
   # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  #   useXkbConfig = true; # use xkb.options in tty.
-  # };
-  environment.sessionVariables = rec {
+  environment.sessionVariables = {
     XDG_CACHE_HOME = "$HOME/.cache";
     XDG_CONFIG_HOME = "$HOME/.config";
     XDG_DATA_HOME = "$HOME/.local/share";
@@ -108,8 +106,6 @@ in
   services.xserver = {
     enable = true;
     # Enable the GNOME Desktop Environment.
-    displayManager.gdm.enable = true;
-    desktopManager.gnome.enable = true;
 
     displayManager.sessionCommands = ''
       xset r rate 200 30
@@ -119,8 +115,14 @@ in
     xkb.layout = "us";
     # xkb.options = "eurosign:e,caps:escape";
   };
-  ## Some displayManager conf has been renamed from xserver.displayManager
+
+  services.desktopManager = {
+    gnome.enable = true;
+  };
+
   services.displayManager = {
+    gdm.enable = true;
+
     # Autologin
     autoLogin.enable = true;
     autoLogin.user = "ralphpig";
@@ -150,15 +152,27 @@ in
     "openssl-1.1.1w" # for sublime4
   ];
 
-
   environment.systemPackages = with pkgs; [
     home-manager
+
+    # Code
+    deno
+    eslint
+    jre
+    nodejs_22
+    sublime-merge
+    sublime4
+    unstable.codex
+    unstable.codex-acp
+    unstable.zed-editor
+    yarn
 
     # Tools
     bind
     git
     htop
     jq
+    ncdu
     neovim
     nil
     nixd
@@ -173,8 +187,6 @@ in
 
     # Work
     awscli2
-    eslint
-    deno
     glab
     husky
     insomnia
@@ -182,12 +194,7 @@ in
     kubeseal
     mongodb-compass
     mongodb-tools
-    nodejs_22
     postgresql
-    sublime-merge
-    sublime4
-    yarn
-    unstable.zed-editor
 
     # Applications
     bambu-studio
@@ -206,131 +213,126 @@ in
     packages = with pkgs; [
       jetbrains-mono
       lilex
-      (
-        iosevka.override {
-          set = "Ralphpig";
-          privateBuildPlan = ''
-            [buildPlans.IosevkaRalphpig]
-            family = "Iosevka Ralphpig"
-            spacing = "normal"
-            serifs = "sans"
-            noCvSs = true
-            exportGlyphNames = false
+      # No real customization, just couldn't get the bundle of weights/styles I wanted
+      (iosevka.override {
+        set = "Ralphpig";
+        privateBuildPlan = ''
+          [buildPlans.IosevkaRalphpig]
+          family = "Iosevka Ralphpig"
+          spacing = "normal"
+          serifs = "sans"
+          noCvSs = true
+          exportGlyphNames = false
 
-            [buildPlans.IosevkaRalphpig.weights.Regular]
-            shape = 400
-            menu = 400
-            css = 400
+          [buildPlans.IosevkaRalphpig.weights.Regular]
+          shape = 400
+          menu = 400
+          css = 400
 
-            [buildPlans.IosevkaRalphpig.weights.Bold]
-            shape = 700
-            menu = 700
-            css = 700
+          [buildPlans.IosevkaRalphpig.weights.Bold]
+          shape = 700
+          menu = 700
+          css = 700
 
-            [buildPlans.IosevkaRalphpig.widths.Normal]
-            shape = 600
-            menu = 5
-            css = "normal"
+          [buildPlans.IosevkaRalphpig.widths.Normal]
+          shape = 600
+          menu = 5
+          css = "normal"
 
-            [buildPlans.IosevkaRalphpig.slopes.Upright]
-            angle = 0
-            shape = "upright"
-            menu = "upright"
-            css = "normal"
+          [buildPlans.IosevkaRalphpig.slopes.Upright]
+          angle = 0
+          shape = "upright"
+          menu = "upright"
+          css = "normal"
 
-            [buildPlans.IosevkaRalphpig.slopes.Italic]
-            angle = 9.4
-            shape = "italic"
-            menu = "italic"
-            css = "italic"
-          '';
-        }
-      )
-      (
-        iosevka.override {
-          set = "RalphpigTerm";
-          privateBuildPlan = ''
-            [buildPlans.IosevkaRalphpigTerm]
-            family = "Iosevka Ralphpig Term"
-            spacing = "term"
-            serifs = "sans"
-            noCvSs = true
-            exportGlyphNames = false
+          [buildPlans.IosevkaRalphpig.slopes.Italic]
+          angle = 9.4
+          shape = "italic"
+          menu = "italic"
+          css = "italic"
+        '';
+      })
+      (iosevka.override {
+        set = "RalphpigTerm";
+        privateBuildPlan = ''
+          [buildPlans.IosevkaRalphpigTerm]
+          family = "Iosevka Ralphpig Term"
+          spacing = "term"
+          serifs = "sans"
+          noCvSs = true
+          exportGlyphNames = false
 
-            [buildPlans.IosevkaRalphpigTerm.weights.Regular]
-            shape = 400
-            menu = 400
-            css = 400
+          [buildPlans.IosevkaRalphpigTerm.weights.Regular]
+          shape = 400
+          menu = 400
+          css = 400
 
-            [buildPlans.IosevkaRalphpigTerm.weights.Bold]
-            shape = 700
-            menu = 700
-            css = 700
+          [buildPlans.IosevkaRalphpigTerm.weights.Bold]
+          shape = 700
+          menu = 700
+          css = 700
 
-            [buildPlans.IosevkaRalphpigTerm.widths.Normal]
-            shape = 600
-            menu = 5
-            css = "normal"
+          [buildPlans.IosevkaRalphpigTerm.widths.Normal]
+          shape = 600
+          menu = 5
+          css = "normal"
 
-            [buildPlans.IosevkaRalphpigTerm.slopes.Upright]
-            angle = 0
-            shape = "upright"
-            menu = "upright"
-            css = "normal"
+          [buildPlans.IosevkaRalphpigTerm.slopes.Upright]
+          angle = 0
+          shape = "upright"
+          menu = "upright"
+          css = "normal"
 
-            [buildPlans.IosevkaRalphpigTerm.slopes.Italic]
-            angle = 9.4
-            shape = "italic"
-            menu = "italic"
-            css = "italic"
-          '';
-        }
-      )
-      (
-        iosevka.override {
-          set = "RalphpigProportional";
-          privateBuildPlan = ''
-            [buildPlans.IosevkaRalphpigProportional]
-            family = "Iosevka Ralphpig Proportional"
-            spacing = "quasi-proportional"
-            serifs = "sans"
-            noCvSs = true
-            exportGlyphNames = false
+          [buildPlans.IosevkaRalphpigTerm.slopes.Italic]
+          angle = 9.4
+          shape = "italic"
+          menu = "italic"
+          css = "italic"
+        '';
+      })
+      (iosevka.override {
+        set = "RalphpigProportional";
+        privateBuildPlan = ''
+          [buildPlans.IosevkaRalphpigProportional]
+          family = "Iosevka Ralphpig Proportional"
+          spacing = "quasi-proportional"
+          serifs = "sans"
+          noCvSs = true
+          exportGlyphNames = false
 
-            [buildPlans.IosevkaRalphpigProportional.weights.Regular]
-            shape = 400
-            menu = 400
-            css = 400
+          [buildPlans.IosevkaRalphpigProportional.weights.Regular]
+          shape = 400
+          menu = 400
+          css = 400
 
-            [buildPlans.IosevkaRalphpigProportional.weights.Bold]
-            shape = 700
-            menu = 700
-            css = 700
+          [buildPlans.IosevkaRalphpigProportional.weights.Bold]
+          shape = 700
+          menu = 700
+          css = 700
 
-            [buildPlans.IosevkaRalphpigProportional.widths.Normal]
-            shape = 600
-            menu = 5
-            css = "normal"
+          [buildPlans.IosevkaRalphpigProportional.widths.Normal]
+          shape = 600
+          menu = 5
+          css = "normal"
 
-            [buildPlans.IosevkaRalphpigProportional.slopes.Upright]
-            angle = 0
-            shape = "upright"
-            menu = "upright"
-            css = "normal"
+          [buildPlans.IosevkaRalphpigProportional.slopes.Upright]
+          angle = 0
+          shape = "upright"
+          menu = "upright"
+          css = "normal"
 
-            [buildPlans.IosevkaRalphpigProportional.slopes.Italic]
-            angle = 9.4
-            shape = "italic"
-            menu = "italic"
-            css = "italic"
-          '';
-        }
-      )
+          [buildPlans.IosevkaRalphpigProportional.slopes.Italic]
+          angle = 9.4
+          shape = "italic"
+          menu = "italic"
+          css = "italic"
+        '';
+      })
     ];
 
     fontconfig = {
       defaultFonts = {
-        serif = [  "Iosevka Ralphpig Proportional" ];
+        serif = [ "Iosevka Ralphpig Proportional" ];
         sansSerif = [ "Iosevka Ralphpig Proportional" ];
         monospace = [ "Iosevka Ralphpig" ];
       };
@@ -357,46 +359,7 @@ in
     };
   };
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # Copy the NixOS configuration file and link it from the resulting system
-  # (/run/current-system/configuration.nix). This is useful in case you
-  # accidentally delete configuration.nix.
-  # system.copySystemConfiguration = true;
-
-  # This option defines the first version of NixOS you have installed on this particular machine,
-  # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
-  #
-  # Most users should NEVER change this value after the initial install, for any reason,
-  # even if you've upgraded your system to a new NixOS release.
-  #
-  # This value does NOT affect the Nixpkgs version your packages and OS are pulled from,
-  # so changing it will NOT upgrade your system - see https://nixos.org/manual/nixos/stable/#sec-upgrading for how
-  # to actually do that.
-  #
-  # This value being lower than the current NixOS release does NOT mean your system is
-  # out of date, out of support, or vulnerable.
-  #
-  # Do NOT change this value unless you have manually inspected all the changes it would make to your configuration,
-  # and migrated your data accordingly.
-  #
+  # Don't change ever
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
-  system.stateVersion = "24.11"; # Did you read the comment?
+  system.stateVersion = "24.11"; # Don't change ever
 }
