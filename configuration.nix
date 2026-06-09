@@ -11,8 +11,19 @@
 let
   # Bring in nixpkgs-unstable alongside your stable pkgs
   unstable = import <nixpkgs-unstable> {
+    stdenv.hostPlatform.system = pkgs.system;
     config = config.nixpkgs.config;
   };
+  nixpkgs-master =
+    import
+      (fetchTarball {
+        url = "https://github.com/NixOS/nixpkgs/archive/master.tar.gz";
+      })
+      {
+        stdenv.hostPlatform.system = pkgs.system;
+        config = config.nixpkgs.config;
+      };
+
 in
 {
   imports = [
@@ -21,6 +32,8 @@ in
     ./luks.nix
     ./gpu.nix
   ];
+
+  nix.settings.download-buffer-size = 524288000; # 500 MiB
 
   system.autoUpgrade = {
     # Everything lags on first startup while this is working (I think)
@@ -105,7 +118,6 @@ in
   # Services
   services.xserver = {
     enable = true;
-    # Enable the GNOME Desktop Environment.
 
     displayManager.sessionCommands = ''
       xset r rate 200 30
@@ -117,7 +129,13 @@ in
   };
 
   services.desktopManager = {
-    gnome.enable = true;
+    gnome = {
+      enable = true;
+      extraGSettingsOverrides = ''
+        [org.gnome.mutter]
+        experimental-features=['scale-monitor-framebuffer', 'xwayland-native-scaling']
+      '';
+    };
   };
 
   services.displayManager = {
@@ -162,8 +180,8 @@ in
     nodejs_22
     sublime-merge
     sublime4
-    unstable.codex
-    unstable.codex-acp
+    nixpkgs-master.codex
+    nixpkgs-master.codex-acp
     unstable.zed-editor
     yarn
 
@@ -197,7 +215,6 @@ in
     postgresql
 
     # Applications
-    bambu-studio
     bitwarden-cli
     gnome-tweaks
     libreoffice

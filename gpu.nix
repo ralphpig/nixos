@@ -1,5 +1,12 @@
-{ config, ... }:
+{ config, pkgs, ... }:
+let
+  pkgsUnstable = import <nixpkgs-unstable> {
+    stdenv.hostPlatform.system = pkgs.system;
+    config = config.nixpkgs.config;
+  };
+in
 {
+  boot.kernelPackages = pkgsUnstable.linuxPackages_latest;
 
   # Enable OpenGL
   hardware.graphics = {
@@ -13,38 +20,42 @@
   # boot.initrd.availableKernelModules = ["nvidia"];
 
   hardware.nvidia = {
+    nvidiaSettings = true;
 
     # Modesetting is required.
     modesetting.enable = true;
 
-    # Nvidia power management. Experimental, and can cause sleep/suspend to fail.
-    # Enable this if you have graphical corruption issues or application crashes after waking
-    # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead
-    # of just the bare essentials.
-
-    # Enabled because suspend was not working
-    powerManagement.enable = true;
-
-    # Fine-grained power management. Turns off GPU when not in use.
-    # Experimental and only works on modern Nvidia GPUs (Turing or newer).
-    powerManagement.finegrained = false;
-
-    # Use the NVidia open source kernel module (not to be confused with the
-    # independent third-party "nouveau" open source driver).
-    # Support is limited to the Turing and later architectures. Full list of
-    # supported GPUs is at:
-    # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus
-    # Only available from driver 515.43.04+
-    # Currently alpha-quality/buggy, so false is currently the recommended setting.
-    open = false;
-
-    # Enable the Nvidia settings menu,
-    # accessible via `nvidia-settings`.
-    nvidiaSettings = true;
-
+    # "Helps" fix suspend/awake issues, but causes freezing
+    powerManagement.enable = false;
     nvidiaPersistenced = true;
 
-    # Optionally, you may need to select the appropriate driver version for your specific GPU.
-    package = config.boot.kernelPackages.nvidiaPackages.beta;
+    # 1080ti does not support
+    powerManagement.finegrained = false;
+    open = false;
+
+    # 580 is last official support for Pascal arch (1080ti)
+    # https://forums.developer.nvidia.com/t/unix-graphics-feature-deprecation-schedule/60588
+    package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
+  };
+
+  boot.kernelParams = [
+    "ibt=off" # Allegedly helps 10-series NVIDIA + Intel work better?
+
+    # Already set by modesetting.enable
+    # "nvidia-drm.modeset=1"
+    # "nvidia-drm.fbdev=1"
+
+    # Pascal stability workaround; only meaningful with open = false.
+    "nvidia.NVreg_EnableGpuFirmware=0"
+
+    "nvidia.NVreg_UsePageAttributeTable=1"
+  ];
+
+  environment.sessionVariables = {
+    GBM_BACKEND = "nvidia-drm";
+    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+    __GL_SYNC_TO_VBLANK = "1";
+
+    MUTTER_DEBUG_DISABLE_TRIPLE_BUFFERING = "1";
   };
 }
