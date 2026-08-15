@@ -178,11 +178,13 @@ in
     eslint
     jre
     nodejs_22
+    rustup
     sublime-merge
     sublime4
     nixpkgs-master.codex
     nixpkgs-master.codex-acp
-    unstable.zed-editor
+    nixpkgs-master.claude-code
+    nixpkgs-master.zed-editor
     yarn
 
     # Tools
@@ -190,6 +192,7 @@ in
     git
     htop
     jq
+    just
     ncdu
     neovim
     nil
@@ -210,11 +213,13 @@ in
     insomnia
     kubectl
     kubeseal
-    mongodb-compass
+    unstable.mongodb-compass
     mongodb-tools
     postgresql
+    vault
 
     # Applications
+    rapidraw
     bitwarden-cli
     gnome-tweaks
     libreoffice
