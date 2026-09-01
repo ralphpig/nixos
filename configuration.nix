@@ -113,6 +113,9 @@ in
     XDG_CONFIG_HOME = "$HOME/.config";
     XDG_DATA_HOME = "$HOME/.local/share";
     XDG_STATE_HOME = "$HOME/.local/state";
+
+    # Allow rustc to find openssl
+    PKG_CONFIG_PATH = [ "${pkgs.openssl.dev}/lib/pkgconfig" ];
   };
 
   # Services
@@ -178,7 +181,6 @@ in
     eslint
     jre
     nodejs_22
-    rustup
     sublime-merge
     sublime4
     nixpkgs-master.codex
@@ -187,23 +189,33 @@ in
     nixpkgs-master.zed-editor
     yarn
 
+    ## Rust
+    gcc
+    just
+    rustup
+    sqlx-cli
+    pkg-config
+    openssl.dev
+
+    ### LSP / Editor util
+    color-lsp
+    shfmt
+    sql-formatter
+    yamlfmt
+
     # Tools
     bind
     git
     htop
     jq
-    just
     ncdu
     neovim
     nil
     nixd
     oh-my-zsh
     ripgrep
-    shfmt
-    sql-formatter
     wget
     wl-clipboard
-    yamlfmt
     zsh
 
     # Work
