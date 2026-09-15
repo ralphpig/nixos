@@ -43,6 +43,10 @@ in
     # allowReboot  = true;
   };
   boot = {
+    # Newest mainline kernel; the channel default (6.18) works fine, this just
+    # tracks current amdgpu/RDNA4 and general hardware fixes.
+    # kernelPackages = pkgs.linuxPackages_latest;
+
     loader = {
       efi.canTouchEfiVariables = true;
 
@@ -57,11 +61,27 @@ in
           # Wait for selection
           set timeout=-1
         '';
+        # GRUB software-renders gfxterm into the AMD card's UEFI GOP framebuffer,
+        # which is uncached over PCIe - every redraw is slow, so the menu paints
+        # line by line and scrolls laggily. Pinning a mode keeps "auto" from
+        # picking the 4K panel's native resolution. 1080p rather than something
+        # smaller because every panel syncs it - 4K monitors can refuse 1024x768.
+        gfxmodeEfi = "1920x1080";
+
         fontSize = 24;
       };
     };
 
     initrd.systemd.enable = true;
+
+    # usbhid is in hardware-configuration.nix's availableKernelModules, so it is
+    # only loaded once udev matches a device. Load it unconditionally at stage 1
+    # start instead, to shave what little can be shaved off the window between
+    # plymouth taking the password prompt and the keyboard existing.
+    initrd.kernelModules = [
+      "usbhid"
+      "hid_generic"
+    ];
     plymouth = {
       enable = true;
       theme = "square";
@@ -84,7 +104,9 @@ in
       "rd.systemd.show_status=false"
       "rd.udev.log_level=3"
       "udev.log_priority=3"
-      # Force plymouth to use simpledrm to avoid 8 second timeout waiting for GPU
+
+      # Keep stage 1 on simpledrm rather than waiting on / modesetting the real
+      # GPU. Paired with hardware.amdgpu.initrd.enable staying off in gpu.nix.
       "plymouth.use-simpledrm"
     ];
   };
@@ -235,9 +257,10 @@ in
     bitwarden-cli
     gnome-tweaks
     libreoffice
-    (pkgs.microsoft-edge.override {
-      commandLineArgs = "--ozone-platform=x11";
-    })
+    microsoft-edge
+    # (pkgs.microsoft-edge.override {
+    #   commandLineArgs = "--ozone-platform=x11";
+    # })
     spotify
     zoom-us
   ];
