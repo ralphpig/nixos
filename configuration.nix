@@ -4,37 +4,18 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 {
-  config,
   pkgs,
   ...
 }:
-let
-  # Bring in nixpkgs-unstable alongside your stable pkgs
-  unstable = import <nixpkgs-unstable> {
-    stdenv.hostPlatform.system = pkgs.system;
-    config = config.nixpkgs.config;
-  };
-  nixpkgs-master =
-    import
-      (fetchTarball {
-        url = "https://github.com/NixOS/nixpkgs/archive/master.tar.gz";
-      })
-      {
-        stdenv.hostPlatform.system = pkgs.system;
-        config = config.nixpkgs.config;
-      };
-
-in
 {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
-    ./luks.nix
-    ./gpu.nix
+    ./boot.nix
+    ./applications.nix
   ];
 
   nix.settings.download-buffer-size = 524288000; # 500 MiB
-
   system.autoUpgrade = {
     # Everything lags on first startup while this is working (I think)
     enable = false;
@@ -42,77 +23,13 @@ in
     # I also shutdown and reboot every day
     # allowReboot  = true;
   };
-  boot = {
-    # Newest mainline kernel; the channel default (6.18) works fine, this just
-    # tracks current amdgpu/RDNA4 and general hardware fixes.
-    # kernelPackages = pkgs.linuxPackages_latest;
 
-    loader = {
-      efi.canTouchEfiVariables = true;
-
-      # systemd-boot.enable = true;
-      grub = {
-        enable = true;
-        device = "nodev";
-        efiSupport = true;
-        useOSProber = true;
-        configurationLimit = 10;
-        extraConfig = ''
-          # Wait for selection
-          set timeout=-1
-        '';
-        # GRUB software-renders gfxterm into the AMD card's UEFI GOP framebuffer,
-        # which is uncached over PCIe - every redraw is slow, so the menu paints
-        # line by line and scrolls laggily. Pinning a mode keeps "auto" from
-        # picking the 4K panel's native resolution. 1080p rather than something
-        # smaller because every panel syncs it - 4K monitors can refuse 1024x768.
-        gfxmodeEfi = "1920x1080";
-
-        fontSize = 24;
-      };
-    };
-
-    initrd.systemd.enable = true;
-
-    # usbhid is in hardware-configuration.nix's availableKernelModules, so it is
-    # only loaded once udev matches a device. Load it unconditionally at stage 1
-    # start instead, to shave what little can be shaved off the window between
-    # plymouth taking the password prompt and the keyboard existing.
-    initrd.kernelModules = [
-      "usbhid"
-      "hid_generic"
-    ];
-    plymouth = {
-      enable = true;
-      theme = "square";
-      themePackages = with pkgs; [
-        # By default we would install all themes
-        (adi1090x-plymouth-themes.override {
-          selected_themes = [ "square" ];
-        })
-      ];
-    };
-
-    consoleLogLevel = 0;
-    initrd.verbose = false;
-    kernelParams = [
-      # Enable "Silent Boot"
-      "quiet"
-      "splash"
-      "boot.shell_on_fail"
-      "loglevel=3"
-      "rd.systemd.show_status=false"
-      "rd.udev.log_level=3"
-      "udev.log_priority=3"
-
-      # Keep stage 1 on simpledrm rather than waiting on / modesetting the real
-      # GPU. Paired with hardware.amdgpu.initrd.enable staying off in gpu.nix.
-      "plymouth.use-simpledrm"
-    ];
+  hardware.graphics = {
+    enable = true;
   };
 
   networking = {
-    hostName = "ralphpig-nixos";
+    hostName = "ralphpig-nixos-zfs";
 
     networkmanager = {
       enable = true;
@@ -141,6 +58,8 @@ in
   };
 
   # Services
+  virtualisation.docker.enable = true;
+
   services.xserver = {
     enable = true;
 
@@ -188,220 +107,6 @@ in
     enable = true;
     pulse.enable = true;
   };
-
-  # Packages
-  nixpkgs.config.allowUnfree = true;
-  nixpkgs.config.permittedInsecurePackages = [
-    "openssl-1.1.1w" # for sublime4
-  ];
-
-  environment.systemPackages = with pkgs; [
-    home-manager
-
-    # Code
-    deno
-    eslint
-    jre
-    nodejs_22
-    sublime-merge
-    sublime4
-    nixpkgs-master.codex
-    nixpkgs-master.codex-acp
-    nixpkgs-master.claude-code
-    nixpkgs-master.zed-editor
-    yarn
-
-    ## Rust
-    gcc
-    just
-    rustup
-    sqlx-cli
-    pkg-config
-    openssl.dev
-
-    ### LSP / Editor util
-    color-lsp
-    shfmt
-    sql-formatter
-    yamlfmt
-
-    # Tools
-    bind
-    git
-    htop
-    jq
-    ncdu
-    neovim
-    nil
-    nixd
-    oh-my-zsh
-    ripgrep
-    wget
-    wl-clipboard
-    zsh
-
-    # Work
-    awscli2
-    glab
-    husky
-    insomnia
-    kubectl
-    kubeseal
-    unstable.mongodb-compass
-    mongodb-tools
-    postgresql
-    vault
-
-    # Applications
-    rapidraw
-    bitwarden-cli
-    gnome-tweaks
-    libreoffice
-    microsoft-edge
-    # (pkgs.microsoft-edge.override {
-    #   commandLineArgs = "--ozone-platform=x11";
-    # })
-    spotify
-    zoom-us
-  ];
-
-  fonts = {
-    enableDefaultPackages = true;
-    packages = with pkgs; [
-      jetbrains-mono
-      lilex
-      # No real customization, just couldn't get the bundle of weights/styles I wanted
-      (iosevka.override {
-        set = "Ralphpig";
-        privateBuildPlan = ''
-          [buildPlans.IosevkaRalphpig]
-          family = "Iosevka Ralphpig"
-          spacing = "normal"
-          serifs = "sans"
-          noCvSs = true
-          exportGlyphNames = false
-
-          [buildPlans.IosevkaRalphpig.weights.Regular]
-          shape = 400
-          menu = 400
-          css = 400
-
-          [buildPlans.IosevkaRalphpig.weights.Bold]
-          shape = 700
-          menu = 700
-          css = 700
-
-          [buildPlans.IosevkaRalphpig.widths.Normal]
-          shape = 600
-          menu = 5
-          css = "normal"
-
-          [buildPlans.IosevkaRalphpig.slopes.Upright]
-          angle = 0
-          shape = "upright"
-          menu = "upright"
-          css = "normal"
-
-          [buildPlans.IosevkaRalphpig.slopes.Italic]
-          angle = 9.4
-          shape = "italic"
-          menu = "italic"
-          css = "italic"
-        '';
-      })
-      (iosevka.override {
-        set = "RalphpigTerm";
-        privateBuildPlan = ''
-          [buildPlans.IosevkaRalphpigTerm]
-          family = "Iosevka Ralphpig Term"
-          spacing = "term"
-          serifs = "sans"
-          noCvSs = true
-          exportGlyphNames = false
-
-          [buildPlans.IosevkaRalphpigTerm.weights.Regular]
-          shape = 400
-          menu = 400
-          css = 400
-
-          [buildPlans.IosevkaRalphpigTerm.weights.Bold]
-          shape = 700
-          menu = 700
-          css = 700
-
-          [buildPlans.IosevkaRalphpigTerm.widths.Normal]
-          shape = 600
-          menu = 5
-          css = "normal"
-
-          [buildPlans.IosevkaRalphpigTerm.slopes.Upright]
-          angle = 0
-          shape = "upright"
-          menu = "upright"
-          css = "normal"
-
-          [buildPlans.IosevkaRalphpigTerm.slopes.Italic]
-          angle = 9.4
-          shape = "italic"
-          menu = "italic"
-          css = "italic"
-        '';
-      })
-      (iosevka.override {
-        set = "RalphpigProportional";
-        privateBuildPlan = ''
-          [buildPlans.IosevkaRalphpigProportional]
-          family = "Iosevka Ralphpig Proportional"
-          spacing = "quasi-proportional"
-          serifs = "sans"
-          noCvSs = true
-          exportGlyphNames = false
-
-          [buildPlans.IosevkaRalphpigProportional.weights.Regular]
-          shape = 400
-          menu = 400
-          css = 400
-
-          [buildPlans.IosevkaRalphpigProportional.weights.Bold]
-          shape = 700
-          menu = 700
-          css = 700
-
-          [buildPlans.IosevkaRalphpigProportional.widths.Normal]
-          shape = 600
-          menu = 5
-          css = "normal"
-
-          [buildPlans.IosevkaRalphpigProportional.slopes.Upright]
-          angle = 0
-          shape = "upright"
-          menu = "upright"
-          css = "normal"
-
-          [buildPlans.IosevkaRalphpigProportional.slopes.Italic]
-          angle = 9.4
-          shape = "italic"
-          menu = "italic"
-          css = "italic"
-        '';
-      })
-    ];
-
-    fontconfig = {
-      defaultFonts = {
-        serif = [ "Iosevka Ralphpig Proportional" ];
-        sansSerif = [ "Iosevka Ralphpig Proportional" ];
-        monospace = [ "Iosevka Ralphpig" ];
-      };
-    };
-  };
-
-  # Program Config
-  programs.zsh = {
-    enable = true;
-  };
-
-  virtualisation.docker.enable = true;
 
   # Users
   users = {
