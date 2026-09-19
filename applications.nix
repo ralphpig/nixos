@@ -34,7 +34,7 @@ in
     eslint
     jre
     nodejs_22
-    sublime-merge
+    unstable.sublime-merge-dev
     sublime4
     nixpkgs-master.codex
     nixpkgs-master.codex-acp
@@ -80,6 +80,7 @@ in
     kubeseal
     unstable.mongodb-compass
     mongodb-tools
+    pgcli
     postgresql
     vault
 
@@ -89,9 +90,6 @@ in
     gnome-tweaks
     libreoffice
     microsoft-edge
-    # (pkgs.microsoft-edge.override {
-    #   commandLineArgs = "--ozone-platform=x11";
-    # })
     spotify
     zoom-us
   ];

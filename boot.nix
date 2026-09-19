@@ -5,7 +5,9 @@
 {
   boot = {
     loader = {
+      efi.efiSysMountPoint = "/boot/efi";
       efi.canTouchEfiVariables = true;
+
       grub = {
         enable = true;
         device = "nodev";
@@ -41,10 +43,10 @@
       # only loaded once udev matches a device. Load it unconditionally at stage 1
       # start instead, to shave what little can be shaved off the window between
       # plymouth taking the password prompt and the keyboard existing.
-      kernelModules = [
-        "usbhid"
-        "hid_generic"
-      ];
+      # kernelModules = [
+      #  "usbhid"
+      #  "hid_generic"
+      # ];
     };
 
     # ZFS
