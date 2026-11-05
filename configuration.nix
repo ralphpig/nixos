@@ -15,7 +15,11 @@
     ./applications.nix
   ];
 
-  nix.settings.download-buffer-size = 524288000; # 500 MiB
+  nix.settings = {
+    download-buffer-size = 524288000; # 500 MiB
+    extra-experimental-features = [ "nix-command" ];
+  };
+
   system.autoUpgrade = {
     # Everything lags on first startup while this is working (I think)
     enable = false;
