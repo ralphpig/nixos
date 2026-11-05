@@ -9,15 +9,15 @@ let
     stdenv.hostPlatform.system = pkgs.system;
     config = config.nixpkgs.config;
   };
-  nixpkgs-master =
-    import
-      (fetchTarball {
-        url = "https://github.com/NixOS/nixpkgs/archive/master.tar.gz";
-      })
-      {
-        stdenv.hostPlatform.system = pkgs.system;
-        config = config.nixpkgs.config;
-      };
+  # nixpkgs-master =
+  #   import
+  #     (fetchTarball {
+  #       url = "https://github.com/NixOS/nixpkgs/archive/master.tar.gz";
+  #     })
+  #     {
+  #       stdenv.hostPlatform.system = pkgs.system;
+  #       config = config.nixpkgs.config;
+  #     };
 
 in
 {
@@ -36,11 +36,14 @@ in
     nodejs_22
     unstable.sublime-merge-dev
     sublime4
-    nixpkgs-master.codex
-    nixpkgs-master.codex-acp
-    nixpkgs-master.claude-code
-    nixpkgs-master.zed-editor
+    unstable.zed-editor
     yarn
+
+    ## AI
+    unstable.pi-coding-agent
+    unstable.codex
+    unstable.codex-acp
+    unstable.claude-code
 
     ## Rust
     gcc
@@ -48,12 +51,15 @@ in
     rustup
     sqlx-cli
     pkg-config
+    lcms2
+    nasm
     openssl.dev
 
     ### LSP / Editor util
     color-lsp
     shfmt
     sql-formatter
+    pgformatter
     yamlfmt
 
     # Tools
@@ -61,11 +67,13 @@ in
     git
     htop
     jq
+    lsof
     ncdu
     neovim
     nil
     nixd
     oh-my-zsh
+    osv-scanner
     ripgrep
     wget
     wl-clipboard
@@ -229,6 +237,7 @@ in
   programs.zsh = {
     enable = true;
   };
+
   programs.nh = {
     enable = true;
     clean.enable = true;
