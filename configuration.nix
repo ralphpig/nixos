@@ -13,6 +13,7 @@
     ./hardware-configuration.nix
     ./boot.nix
     ./applications.nix
+    # ./llm.nix
   ];
 
   nix.settings = {
