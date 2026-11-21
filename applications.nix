@@ -36,7 +36,8 @@ in
     nodejs_22
     unstable.sublime-merge-dev
     sublime4
-    unstable.zed-editor
+    zed-editor
+    pnpm_12
     yarn
 
     ## AI
@@ -79,6 +80,11 @@ in
     wl-clipboard
     zsh
 
+    ## SOPS
+    age
+    sops
+    ssh-to-age
+
     # Work
     awscli2
     glab
@@ -88,6 +94,7 @@ in
     kubeseal
     unstable.mongodb-compass
     mongodb-tools
+    oci-cli
     pgcli
     postgresql
     vault
