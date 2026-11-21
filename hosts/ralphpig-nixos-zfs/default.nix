@@ -7,6 +7,7 @@
     ./boot.nix
 
     ../../modules/core.nix
+    ../../modules/home-manager.nix
     ../../modules/services.nix
     ../../modules/fonts.nix
 

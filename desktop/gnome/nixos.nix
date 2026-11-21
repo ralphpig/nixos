@@ -1,7 +1,10 @@
 # GNOME on GDM (system side). User-level GNOME settings (dconf, extensions,
-# keybinds) will live next to this in ./home.nix.
+# keybinds) live next to this in ./home.nix and are pulled in here, so
+# importing this one file enables GNOME end to end.
 { pkgs, username, ... }:
 {
+  home-manager.users.${username}.imports = [ ./home.nix ];
+
   services.xserver = {
     enable = true;
 

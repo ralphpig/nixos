@@ -1,22 +1,17 @@
-# Everyday command-line tools
+# Everyday command-line tools. git, neovim and zsh are installed and
+# configured per user by home-manager (home/common).
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs; [
-    home-manager # TODO: drop once home-manager is a NixOS module
-
     bind
-    git
     htop
     jq
     lsof
     ncdu
-    neovim
-    oh-my-zsh
     osv-scanner
     ripgrep
     wget
     wl-clipboard
-    zsh
 
     # SOPS
     age
