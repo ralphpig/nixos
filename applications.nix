@@ -1,26 +1,19 @@
 {
-  config,
+  inputs,
   pkgs,
   ...
 }:
-let
-  # Bring in nixpkgs-unstable alongside your stable pkgs
-  unstable = import <nixpkgs-unstable> {
-    stdenv.hostPlatform.system = pkgs.system;
-    config = config.nixpkgs.config;
-  };
-  # nixpkgs-master =
-  #   import
-  #     (fetchTarball {
-  #       url = "https://github.com/NixOS/nixpkgs/archive/master.tar.gz";
-  #     })
-  #     {
-  #       stdenv.hostPlatform.system = pkgs.system;
-  #       config = config.nixpkgs.config;
-  #     };
-
-in
 {
+  # Expose nixpkgs-unstable as `pkgs.unstable`
+  nixpkgs.overlays = [
+    (final: _prev: {
+      unstable = import inputs.nixpkgs-unstable {
+        inherit (final.stdenv.hostPlatform) system;
+        inherit (final) config;
+      };
+    })
+  ];
+
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.permittedInsecurePackages = [
     "openssl-1.1.1w" # for sublime4
@@ -247,6 +240,7 @@ in
 
   programs.nh = {
     enable = true;
+    flake = "/home/ralphpig/nixos";
     clean.enable = true;
     clean.extraArgs = "--keep-since 4d --keep 3";
   };

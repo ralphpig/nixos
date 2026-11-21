@@ -18,7 +18,10 @@
 
   nix.settings = {
     download-buffer-size = 524288000; # 500 MiB
-    extra-experimental-features = [ "nix-command" ];
+    extra-experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
   };
 
   system.autoUpgrade = {
