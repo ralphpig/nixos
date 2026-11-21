@@ -1,3 +1,4 @@
+# Bootloader and splash. ZFS boot bits live in ./storage.nix.
 {
   pkgs,
   ...
@@ -49,15 +50,6 @@
       # ];
     };
 
-    # ZFS
-    supportedFilesystems = [ "zfs" ];
-    initrd.supportedFilesystems = [ "zfs" ];
-    zfs = {
-      requestEncryptionCredentials = true;
-      # It is highly recommended to set it to `false`, the new default from 26.11 on, to reduce the risk of data loss.
-      forceImportRoot = false;
-    };
-
     consoleLogLevel = 0;
 
     kernelParams = [
@@ -70,19 +62,9 @@
       "rd.udev.log_level=3"
       "udev.log_priority=3"
 
-      # ZFS
-      "zfs.zfs_arc_max=8589934592" # cap ARC at 8 GiB
-      "nohibernate" # cannot hibernate with zfs
-
       # Keep stage 1 on simpledrm rather than waiting on / modesetting the real
-      # GPU. Paired with hardware.amdgpu.initrd.enable staying off in gpu.nix.
+      # GPU (i.e. leave hardware.amdgpu.initrd.enable off).
       "plymouth.use-simpledrm"
     ];
-  };
-
-  networking.hostId = "650a68ba"; # required for zfs; head -c4 /dev/urandom | od -A none -t x4
-  services.zfs = {
-    autoScrub.enable = true;
-    trim.enable = true; # NVMe TRIM for the pool
   };
 }

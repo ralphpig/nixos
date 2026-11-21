@@ -8,10 +8,13 @@
 
   outputs =
     { nixpkgs, ... }@inputs:
+    let
+      username = "ralphpig";
+    in
     {
       nixosConfigurations.ralphpig-nixos-zfs = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        modules = [ ./configuration.nix ];
+        specialArgs = { inherit inputs username; };
+        modules = [ ./hosts/ralphpig-nixos-zfs ];
       };
     };
 }
