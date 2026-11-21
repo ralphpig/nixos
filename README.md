@@ -24,8 +24,8 @@ home/
   common/                    # portable zsh/git/neovim, applied to the user AND root
   dotfiles.nix               # live symlinks: ~/.config/<app> -> ~/nixos/home/config/<app>
   config/                    # app configs edited in place (zed, sublime, sql-formatter)
-  wallpapers/
   ralphpig.nix  root.nix     # per-user entry points
+wallpapers/                  # referenced live from the checkout (my.repoDir)
 ```
 
 The username is defined once in `flake.nix` and passed to modules as `username`.

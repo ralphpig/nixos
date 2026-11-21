@@ -1,9 +1,10 @@
 # GNOME user settings (home-manager side). Imported by ./nixos.nix on NixOS;
 # also usable on its own with standalone home-manager on any GNOME system.
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 with lib.hm.gvariant;
 let
-  wallpaper = "file://${../../wallpapers/nord/mountain-dark.jpg}";
+  # Live path into the repo checkout (not a store copy), like home/dotfiles.nix
+  wallpaper = "file://${config.my.repoDir}/wallpapers/nord/mountain-dark.jpg";
 in
 {
   home.packages = with pkgs.gnomeExtensions; [
