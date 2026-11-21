@@ -1,0 +1,27 @@
+{
+	"remember_workspace": false,
+	"font_face": "Iosevka Ralphpig",
+	"side_bar_layout": "commit_graph_as_column",
+	"hardware_acceleration": "opengl",
+	"trim_trailing_white_space_on_save": false,
+	"render_commit_dialog_message_at_top": true,
+	"hide_menu": false,
+	"added_words":
+	[
+		"inclusivity",
+		"middleware",
+	],
+  "theme": "Merge Dark.sublime-theme",
+  // "theme": "Dracula (Alucard).sublime-theme",
+  "color_scheme": "Dracula (Alucard).sublime-color-scheme",
+  // "theme": "Merge Palenight.sublime-theme",
+  // "color_scheme": "Merge Palenight.sublime-color-scheme",
+	"diff_style": "auto",
+	"auto_diff_style_min_chars": 70,
+	"font_size": 10,
+	"tab_size": 2,
+	"translate_tabs_to_spaces": true,
+	"update_check": false,
+	"editor_path": "zeditor",
+	"ignore_diff_white_space": true,
+}

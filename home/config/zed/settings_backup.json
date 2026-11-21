@@ -1,0 +1,141 @@
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run the `open default settings` command
+// from the command palette or from `Zed` application menu.
+{
+  /* AI */
+  // "agent": {
+  //   "default_profile": "write",
+  //   "default_model": {
+  //     "provider": "copilot_chat",
+  //     "model": "gpt-4o"
+  //   }
+  // },
+  "project_panel": {
+    "dock": "left"
+  },
+  "outline_panel": {
+    "dock": "left"
+  },
+  "collaboration_panel": {
+    "dock": "left"
+  },
+  "agent": {
+    "dock": "right",
+    "favorite_models": [],
+    "model_parameters": []
+  },
+  "git_panel": {
+    "dock": "left"
+  },
+  "ssh_connections": [
+    {
+      "host": "10.65.10.201",
+      "username": "ralphpig",
+      "args": [],
+      "projects": [
+        {
+          "paths": [
+            "/etc/nixos"
+          ]
+        },
+        {
+          "paths": [
+            "/home/ralphpig"
+          ]
+        }
+      ]
+    },
+    {
+      "host": "nas.ralphpig.dev",
+      "username": "ralphpig",
+      "args": [],
+      "projects": [
+        {
+          "paths": [
+            "/mnt/core/./"
+          ]
+        },
+        {
+          "paths": [
+            "/mnt/core/config/nixos-lab-proxy"
+          ]
+        }
+      ]
+    }
+  ],
+  "soft_wrap": "none",
+  "allow_rewrap": "in_comments",
+  "show_wrap_guides": true,
+  "agent_servers": {
+    "codex": {
+      "command": "codex-acp"
+    }
+  },
+  "tab_size": 2,
+  "indent_guides": {
+    "enabled": true,
+    "line_width": 1,
+    "active_line_width": 2,
+    "coloring": "fixed",
+    "background_coloring": "disabled"
+  },
+  /* Vim */
+  "base_keymap": "SublimeText",
+  "vim_mode": true,
+  "vim": {
+    // "use_system_clipboard": "on_yank"
+    "use_system_clipboard": "never"
+  },
+  /* Font */
+  "ui_font_size": 14,
+  "ui_font_family": "Iosevka Ralphpig",
+  "buffer_font_size": 12,
+  "buffer_font_family": "Iosevka Ralphpig",
+  "theme": {
+    "mode": "system",
+    "light": "Catppuccin Latte",
+    "dark": "Catppuccin Frappé - No Italics"
+  },
+  /* Format / LSP */
+  "format_on_save": "on",
+  "prettier": {
+    "allowed": false
+  },
+  "languages": {
+    "Vue.js": {
+      "formatter": [], // disabled: only use eslint
+      "code_actions_on_format": {
+        "source.fixAll.eslint": true
+      }
+    },
+    "JavaScript": {
+      "formatter": [], // disabled: only use eslint
+      "code_actions_on_format": {
+        "source.fixAll.eslint": true
+      }
+    },
+    "TypeScript": {
+      // "language_servers": ["typescript-language-server"]
+      "formatter": [], // disabled: only use eslint
+      "code_actions_on_format": {
+        "source.fixAll.eslint": true
+      }
+    },
+    "SQL": {
+      "formatter": {
+        "external": {
+          "command": "sql-formatter",
+          "arguments": [
+            "--config",
+            "/home/ralphpig/.config/sql-formatter/config.json"
+          ]
+        }
+      }
+    }
+  }
+}
