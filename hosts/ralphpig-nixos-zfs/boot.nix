@@ -1,9 +1,22 @@
 # Bootloader and splash. ZFS boot bits live in ./storage.nix.
 {
+  inputs,
   pkgs,
   ...
 }:
 {
+  imports = [ inputs.elegant-grub2-themes.nixosModules.default ];
+
+  # Sets boot.loader.grub.{theme,splashImage,gfxmode*}
+  boot.loader.elegant-grub2-theme = {
+    enable = true;
+    theme = "wave";
+    type = "window";
+    side = "left";
+    color = "dark";
+    screen = "1080p";
+  };
+
   boot = {
     loader = {
       efi.efiSysMountPoint = "/boot/efi";
@@ -20,18 +33,18 @@
           set timeout=-1
         '';
 
-        gfxmodeEfi = "1920x1080";
+        # gfxmodeEfi is set by the Elegant theme module above
         fontSize = 24;
       };
     };
 
     plymouth = {
       enable = true;
-      theme = "square";
+      theme = "hexagon_2";
       themePackages = with pkgs; [
         # By default we would install all themes
         (adi1090x-plymouth-themes.override {
-          selected_themes = [ "square" ];
+          selected_themes = [ "hexagon_2" ];
         })
       ];
     };

@@ -47,6 +47,22 @@ let
         css = "italic"
       '';
     };
+
+  iosevka = mkIosevka {
+    set = "Ralphpig";
+    family = "Iosevka Ralphpig";
+    spacing = "normal";
+  };
+  iosevkaTerm = mkIosevka {
+    set = "RalphpigTerm";
+    family = "Iosevka Ralphpig Term";
+    spacing = "term";
+  };
+  iosevkaProportional = mkIosevka {
+    set = "RalphpigProportional";
+    family = "Iosevka Ralphpig Proportional";
+    spacing = "quasi-proportional";
+  };
 in
 {
   fonts = {
@@ -54,27 +70,36 @@ in
     packages = with pkgs; [
       jetbrains-mono
       lilex
-      (mkIosevka {
-        set = "Ralphpig";
-        family = "Iosevka Ralphpig";
-        spacing = "normal";
-      })
-      (mkIosevka {
-        set = "RalphpigTerm";
-        family = "Iosevka Ralphpig Term";
-        spacing = "term";
-      })
-      (mkIosevka {
-        set = "RalphpigProportional";
-        family = "Iosevka Ralphpig Proportional";
-        spacing = "quasi-proportional";
-      })
+      iosevka
+      iosevkaTerm
+      iosevkaProportional
     ];
 
-    fontconfig.defaultFonts = {
-      serif = [ "Iosevka Ralphpig Proportional" ];
-      sansSerif = [ "Iosevka Ralphpig Proportional" ];
-      monospace = [ "Iosevka Ralphpig" ];
+    # Superseded by stylix.fonts below
+    # fontconfig.defaultFonts = {
+    #   serif = [ "Iosevka Ralphpig Proportional" ];
+    #   sansSerif = [ "Iosevka Ralphpig Proportional" ];
+    #   monospace = [ "Iosevka Ralphpig" ];
+    # };
+  };
+
+  stylix.fonts = {
+    serif = {
+      package = iosevkaProportional;
+      name = "Iosevka Ralphpig Proportional";
+    };
+    sansSerif = {
+      package = iosevkaProportional;
+      name = "Iosevka Ralphpig Proportional";
+    };
+    monospace = {
+      package = iosevka;
+      name = "Iosevka Ralphpig";
+    };
+    sizes = {
+      applications = 11; # matches the old GNOME font-name size
+      desktop = 11;
+      terminal = 10;
     };
   };
 }

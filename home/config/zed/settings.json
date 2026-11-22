@@ -101,7 +101,7 @@
   "theme": {
     "mode": "system",
     "light": "Catppuccin Latte",
-    "dark": "Catppuccin Frappé - No Italics"
+    "dark": "Catppuccin Macchiato"
   },
   /* Format / LSP */
   "format_on_save": "on",

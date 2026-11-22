@@ -21,14 +21,15 @@ in
   dconf.settings = {
     # Appearance
     "org/gnome/desktop/interface" = {
-      color-scheme = "prefer-dark";
       clock-show-weekday = true;
       clock-show-seconds = true;
       clock-format = "12h";
-      accent-color = "red";
-      font-name = "Iosevka Ralphpig Proportional 11";
-      document-font-name = "Iosevka Ralphpig Proportional 11";
-      monospace-font-name = "Iosevka Ralphpig 11";
+      # Superseded by Stylix (polarity, shell theme, stylix.fonts)
+      # color-scheme = "prefer-dark";
+      accent-color = "red"; # Stylix's shell theme still uses GNOME's accent
+      # font-name = "Iosevka Ralphpig Proportional 11";
+      # document-font-name = "Iosevka Ralphpig Proportional 11";
+      # monospace-font-name = "Iosevka Ralphpig 11";
     };
     "org/gnome/desktop/datetime" = {
       automatic-timezone = true;
@@ -49,12 +50,13 @@ in
     };
 
     ## Wallpaper
-    "org/gnome/desktop/background" = {
-      picture-uri = wallpaper;
-      picture-uri-dark = wallpaper;
-      primary-color = "#000000000000";
-      secondary-color = "#000000000000";
-    };
+    # Superseded by stylix.image (modules/stylix.nix)
+    # "org/gnome/desktop/background" = {
+    #   picture-uri = wallpaper;
+    #   picture-uri-dark = wallpaper;
+    #   primary-color = "#000000000000";
+    #   secondary-color = "#000000000000";
+    # };
     "org/gnome/desktop/screensaver" = {
       picture-uri = wallpaper;
       primary-color = "#000000000000";
@@ -85,6 +87,7 @@ in
         places-status-indicator.extensionUuid
         windownavigator.extensionUuid
         vitals.extensionUuid
+        user-themes.extensionUuid # Stylix shell theme; stylix installs the package
       ];
     };
 

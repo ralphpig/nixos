@@ -10,6 +10,7 @@
     ../../modules/home-manager.nix
     ../../modules/services.nix
     ../../modules/fonts.nix
+    ../../modules/stylix.nix
 
     ../../modules/packages/cli.nix
     ../../modules/packages/dev.nix
