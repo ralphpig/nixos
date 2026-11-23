@@ -66,13 +66,18 @@ let
     }
   );
 
-  # Wallpaper, merged into session.json (runtime state, not tracked) on every
-  # rebuild so it follows stylix.image. Nix wins over a wallpaper picked in DMS.
-  stylixSession = pkgs.writeText "dms-stylix-session.json" (
+  # Merged into session.json (runtime state, not tracked) on every rebuild.
+  # Nix wins over what was picked in the shell for these keys.
+  nixSession = pkgs.writeText "dms-session.json" (
     builtins.toJSON {
+      # Follows stylix.image
       wallpaperPath = config.stylix.image;
       wallpaperPathLight = config.stylix.image;
       wallpaperPathDark = config.stylix.image;
+      # The dock's pinned apps, same as GNOME's dash. Keyed by the dock's id
+      # in settings.json (dockConfigs); pins are desktop file names without
+      # .desktop.
+      dockPins.dock = map (lib.removeSuffix ".desktop") (import ../favorite-apps.nix);
     }
   );
 
@@ -155,7 +160,7 @@ in
       fi
     }
     merge "${config.xdg.configHome}/dms/settings.json" ${stylixSettings}
-    merge "${config.xdg.stateHome}/dms/session.json" ${stylixSession}
+    merge "${config.xdg.stateHome}/dms/session.json" ${nixSession}
   '';
 
   # The shell doesn't notice when a rebuild relinks its theme file, so

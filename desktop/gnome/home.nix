@@ -71,21 +71,7 @@ in
       # GNOME hides Log Out when there's only one user; needed to get back to
       # GDM's session picker (GNOME <-> Hyprland)
       always-show-log-out = true;
-      favorite-apps = [
-        "org.gnome.Nautilus.desktop"
-        "com.mitchellh.ghostty.desktop"
-        "dev.zed.Zed.desktop"
-        "sublime_text.desktop"
-        "sublime_merge.desktop"
-        "insomnia.desktop"
-        "microsoft-edge.desktop"
-        "spotify.desktop"
-        # PWAs; Should have same app-id, but not sure
-        "msedge-jnpecgipniidlgicjocehkhajgdnjekh-Default.desktop" # Protonmail
-        "msedge-agimnkijcaahngcdmfeangaknmldooml-Default.desktop" # Youtube
-        "msedge-ifpboanaelncmlfhjbnnloipmogocahb-Default.desktop" # Workflowy
-        "msedge-cifhbcnohmdccbgoicgdjpfamggdegmo-Default.desktop" # Teams
-      ];
+      favorite-apps = import ../favorite-apps.nix; # shared with Hyprland's dock
 
       # Extensions
       disable-user-extensions = false;

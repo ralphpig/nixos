@@ -42,6 +42,8 @@ let
     # workspaces aren't skipped.
     "SUPER + A" = ''hl.dsp.focus({ workspace = "r-1" })'';
     "SUPER + D" = ''hl.dsp.focus({ workspace = "r+1" })'';
+    "SUPER + SHIFT + A" = ''hl.dsp.window.move({ workspace = "r-1" })'';
+    "SUPER + SHIFT + D" = ''hl.dsp.window.move({ workspace = "r+1" })'';
     "SUPER + Page_Up" = ''hl.dsp.focus({ workspace = "e-1" })'';
     "SUPER + Page_Down" = ''hl.dsp.focus({ workspace = "e+1" })'';
     "SUPER + mouse_up" = ''hl.dsp.focus({ workspace = "e-1" })'';
