@@ -26,16 +26,18 @@
 let
   inherit (config.lib.stylix) colors;
 
-  # Stylix palette as a Dux Shell custom theme. Same mapping as Stylix's own
-  # dank-material-shell target, which is disabled below because it writes
+  # Stylix palette as a Dux Shell custom theme. Stylix's own
+  # dank-material-shell target is disabled below because it writes
   # settings.json into the store and makes the shell's Settings read-only.
+  # It also maps the panel (surface) to base01, the same color as the cards
+  # on it; here each layer is one base16 step lighter, like the built-in
+  # themes. Used for light mode too (the shell falls back to `dark`).
   theme = with colors.withHashtag; {
     name = "Stylix";
     primary = base0D;
     primaryText = base00;
-    primaryContainer = base0C;
     secondary = base0E;
-    surface = base01;
+    surface = base00; # panels
     surfaceText = base05;
     surfaceVariant = base02;
     surfaceVariantText = base04;
@@ -43,9 +45,9 @@ let
     background = base00;
     backgroundText = base05;
     outline = base03;
-    surfaceContainer = base01;
-    surfaceContainerHigh = base02;
-    surfaceContainerHighest = base03;
+    surfaceContainer = base01; # cards
+    surfaceContainerHigh = base02; # buttons, chips
+    surfaceContainerHighest = base03; # chips on chips
     error = base08;
     warning = base0A;
     info = base0C;
@@ -57,6 +59,7 @@ let
   stylixSettings = pkgs.writeText "dms-stylix-settings.json" (
     builtins.toJSON {
       currentThemeName = "custom";
+      currentThemeCategory = "custom"; # the Settings theme page's tab
       customThemeFile = themeFile;
       fontFamily = config.stylix.fonts.sansSerif.name;
       monoFontFamily = config.stylix.fonts.monospace.name;
@@ -93,6 +96,21 @@ in
 
   programs.dank-material-shell = {
     enable = true;
+    # Fix: clicking a bar widget again without moving the mouse reopened its
+    # popout instead of closing it. While a popout is open, Hyprland only
+    # delivers clicks to an allow-list of the shell's surfaces; the bar was
+    # only on it once the popout had keyboard focus, which with
+    # focus-follows-mouse needs pointer motion. So the click counted as
+    # "outside" (closing the popout) and also reached the bar (reopening it).
+    # Keep the bar on the list. Fails to build if upstream changes the line;
+    # then check whether it's fixed there and drop this.
+    package = inputs.dms.packages.${pkgs.stdenv.hostPlatform.system}.dms-shell.overrideAttrs (old: {
+      postInstall = old.postInstall + ''
+        substituteInPlace $out/share/quickshell/dms/Widgets/DPopout.qml --replace-fail \
+          'return list.concat(transientWindows);' \
+          'return list.concat(transientWindows).concat(KeyboardFocus.barWindows);'
+      '';
+    });
     systemd = {
       enable = true;
       # Default is graphical-session.target, which GNOME reaches too
@@ -108,10 +126,7 @@ in
     hyprland.hyprpaper.enable = false; # the shell draws the wallpaper
   };
 
-  xdg.dataFile."dms/stylix-theme.json".text = builtins.toJSON {
-    dark = theme;
-    light = theme;
-  };
+  xdg.dataFile."dms/stylix-theme.json".text = builtins.toJSON { dark = theme; };
 
   xdg.configFile =
     let
@@ -123,28 +138,31 @@ in
       "hypr/dms".source = link "hypr-dms";
     };
 
+  # Merge Nix-owned keys into files the shell also writes. In place (keeps
+  # the repo symlink), only on change (clean git diff), and formatted like the
+  # shell writes them (2-space indent, no trailing newline).
   home.activation.duxShellSettings = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-    settings="${config.xdg.configHome}/dms/settings.json"
-    if [ -e "$settings" ]; then
-      merged=$(${lib.getExe pkgs.jq} -s '.[0] * .[1]' "$settings" ${stylixSettings})
-    else
-      merged=$(${lib.getExe pkgs.jq} . ${stylixSettings})
-    fi
-    # Write in place (keeps the repo file) and only on change (clean git diff)
-    if [ "$merged" != "$(cat "$settings" 2>/dev/null)" ]; then
-      run eval 'printf "%s" "$merged" > "$settings"' # no trailing newline, like the shell
-    fi
-
-    session="${config.xdg.stateHome}/dms/session.json"
-    if [ -e "$session" ]; then
-      merged=$(${lib.getExe pkgs.jq} -s '.[0] * .[1]' "$session" ${stylixSession})
-      if [ "$merged" != "$(cat "$session")" ]; then
-        run eval 'printf "%s\n" "$merged" > "$session"'
+    merge() {
+      local file=$1 keys=$2 merged
+      if [ -e "$file" ]; then
+        merged=$(${lib.getExe pkgs.jq} -s '.[0] * .[1]' "$file" "$keys")
+      else
+        merged=$(${lib.getExe pkgs.jq} . "$keys")
+        run mkdir -p "$(dirname "$file")"
       fi
-    else
-      run install -Dm644 ${stylixSession} "$session"
-    fi
+      if [ "$merged" != "$(cat "$file" 2>/dev/null)" ]; then
+        run eval 'printf "%s" "$merged" > "$file"'
+      fi
+    }
+    merge "${config.xdg.configHome}/dms/settings.json" ${stylixSettings}
+    merge "${config.xdg.stateHome}/dms/session.json" ${stylixSession}
   '';
+
+  # The shell doesn't notice when a rebuild relinks its theme file, so
+  # restart it whenever the theme changes
+  systemd.user.services.dms.Unit.X-Restart-Triggers = [
+    config.xdg.dataFile."dms/stylix-theme.json".source
+  ];
 
   wayland.windowManager.hyprland = {
     enable = true;
@@ -196,14 +214,26 @@ in
           # Custom: nearly all the motion in the first ~15%, then a long
           # invisible settle, so it feels faster than its speed says
           snappy = [
-            [ 0.05 0.9 ]
-            [ 0.1 1.0 ]
+            [
+              0.05
+              0.9
+            ]
+            [
+              0.1
+              1.0
+            ]
           ];
           # Standard ease-out (easings.net); Hyprland's stock config uses it
           # for borders and layers. Softer than snappy at the same speed.
           easeOutQuint = [
-            [ 0.23 1 ]
-            [ 0.32 1 ]
+            [
+              0.23
+              1
+            ]
+            [
+              0.32
+              1
+            ]
           ];
         };
     settings.animation =
@@ -255,8 +285,9 @@ in
     #       "^dms:.*"
     #     ];
 
-    # The shell's fragments. A missing one is skipped (before `dms setup`);
-    # an error inside one still surfaces.
+    # The shell's fragments (./config/hypr-dms). A missing one is skipped
+    # (colors and cursor don't exist until set in the shell's Settings); an
+    # error inside one still surfaces.
     extraConfig = ''
       for _, name in ipairs({ ${lib.concatMapStringsSep ", " (f: ''"${f}"'') dmsFragments} }) do
         local ok, err = pcall(require, "dms." .. name)
@@ -264,7 +295,6 @@ in
           error(err)
         end
       end
-
     '';
   };
 }
