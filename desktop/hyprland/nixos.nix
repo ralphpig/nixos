@@ -26,6 +26,11 @@
   services.upower.enable = true;
   services.geoclue2.enable = true; # night light schedule / weather location
 
+  # The shell's network UI only connects/disconnects. For editing connections
+  # (VPN import, split tunnel, credentials): nm-connection-editor ("Advanced
+  # Network Configuration" in the launcher), or GNOME's `gnome-control-center network`.
+  environment.systemPackages = [ pkgs.networkmanagerapplet ];
+
   # Electron/Chromium apps (Edge, Spotify, Zed...) run natively on Wayland
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 }

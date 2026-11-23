@@ -60,11 +60,13 @@ let
     u = { arrow = "up"; vim = "K"; };
     r = { arrow = "right"; vim = "L"; };
   }
-  # Workspaces 1-9: go (Super) and send window (Super+Shift)
-  // lib.concatMapAttrs (_: n: {
-    "SUPER + ${n}" = ''hl.dsp.focus({ workspace = "${n}" })'';
-    "SUPER + SHIFT + ${n}" = ''hl.dsp.window.move({ workspace = "${n}" })'';
-  }) (lib.genAttrs (map toString (lib.range 1 9)) lib.id);
+  # Workspaces 1-10 (key 0 is 10): go (Super) and send window (Super+Shift)
+  // lib.concatMapAttrs (
+    key: n: {
+      "SUPER + ${key}" = ''hl.dsp.focus({ workspace = "${n}" })'';
+      "SUPER + SHIFT + ${key}" = ''hl.dsp.window.move({ workspace = "${n}" })'';
+    }
+  ) (lib.genAttrs (map toString (lib.range 1 9)) lib.id // { "0" = "10"; });
 
   # Media keys: work on the lock screen; volume repeats while held
   mediaBinds = {
