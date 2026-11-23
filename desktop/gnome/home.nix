@@ -9,7 +9,7 @@
 with lib.hm.gvariant;
 let
   # Live path into the repo checkout (not a store copy), like home/dotfiles.nix
-  wallpaper = "file://${config.my.repoDir}/wallpapers/landscape/prairie-mountain-tree.png";
+  wallpaper = "file://${config.my.repoDir}/wallpapers/train-car.png";
 in
 {
   home.packages = with pkgs.gnomeExtensions; [
@@ -25,6 +25,20 @@ in
       # Stylix sets the regular monospace build; keep the term-spaced one
       # (what GNOME Console used)
       font-family = lib.mkForce "Iosevka Ralphpig Term";
+
+      # Vim-style splits (on top of the defaults: Ctrl-Shift-O/E to split
+      # right/down, Ctrl-Shift-Enter to zoom). Ghostty takes these keys
+      # before the shell, so zsh's Alt-H (help) / Alt-L (lowercase) are lost.
+      keybind = [
+        "alt+h=goto_split:left"
+        "alt+j=goto_split:down"
+        "alt+k=goto_split:up"
+        "alt+l=goto_split:right"
+        "alt+shift+h=resize_split:left,10"
+        "alt+shift+j=resize_split:down,10"
+        "alt+shift+k=resize_split:up,10"
+        "alt+shift+l=resize_split:right,10"
+      ];
     };
   };
 
