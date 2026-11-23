@@ -20,6 +20,7 @@ modules/                     # reusable NixOS modules
 desktop/<name>/              # one folder per desktop environment
   nixos.nix                  #   system side; also imports ./home.nix for the user
   home.nix                   #   user side (dconf etc.); usable standalone
+desktop/dux-shell/           # the shell shared by hyprland and niri; imported by their nixos.nix
 home/
   common/                    # portable zsh/git/neovim, applied to the user AND root
   dotfiles.nix               # live symlinks: ~/.config/<app> -> ~/nixos/home/config/<app>
