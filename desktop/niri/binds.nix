@@ -37,13 +37,18 @@ let
       # Stack windows into a column / back out, and show a column as tabs
       "Super+bracketleft" = "consume-or-expel-window-left;";
       "Super+bracketright" = "consume-or-expel-window-right;";
-      "Super+W" = "toggle-column-tabbed-display;";
+      "Super+T" = "toggle-column-tabbed-display;";
 
-      # Previous/next workspace (up/down). Super+A/D as in GNOME.
-      "Super+A" = "focus-workspace-up;";
-      "Super+D" = "focus-workspace-down;";
-      "Super+Shift+A" = "move-column-to-workspace-up;";
-      "Super+Shift+D" = "move-column-to-workspace-down;";
+      # WASD: W/S workspace up/down, A/D column left/right. With Shift,
+      # take the focused column along.
+      "Super+W" = "focus-workspace-up;";
+      "Super+S" = "focus-workspace-down;";
+      "Super+A" = "focus-column-left;";
+      "Super+D" = "focus-column-right;";
+      "Super+Shift+W" = "move-column-to-workspace-up;";
+      "Super+Shift+S" = "move-column-to-workspace-down;";
+      "Super+Shift+A" = "move-column-left;";
+      "Super+Shift+D" = "move-column-right;";
       "Super+Page_Up" = "focus-workspace-up;";
       "Super+Page_Down" = "focus-workspace-down;";
       "Super+Ctrl+Page_Up" = "move-workspace-up;";
@@ -108,10 +113,11 @@ let
             move = "move-column-right";
           };
         }
-    # Workspaces 1-10 (key 0 is 10): go (Super) and send column (Super+Shift)
+    # Workspaces "1"-"10" (key 0 is 10), by name (./home.nix): go (Super) and
+    # send column (Super+Shift)
     // lib.concatMapAttrs (key: n: {
-      "Super+${key}" = "focus-workspace ${n};";
-      "Super+Shift+${key}" = "move-column-to-workspace ${n};";
+      "Super+${key}" = "focus-workspace \"${n}\";";
+      "Super+Shift+${key}" = "move-column-to-workspace \"${n}\";";
     }) (lib.genAttrs (map toString (lib.range 1 9)) lib.id // { "0" = "10"; });
 
   # Media keys: also on the lock screen. niri repeats held keys by default.

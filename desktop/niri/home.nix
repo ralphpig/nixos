@@ -38,6 +38,78 @@ let
     "wpblur"
   ];
 
+  # Fixed workspaces "1"-"10", always there even when empty (like GNOME's
+  # static workspaces); more appear below them as needed. Super+1-0 go to
+  # them by name (./binds.nix), so moving one in the overview doesn't
+  # change its key.
+  workspaces = map toString (lib.range 1 10);
+
+  # Apps with a home workspace: started at login, and their windows open
+  # there at full width (like Super+F). `startupOnly`: only windows opened in
+  # niri's first minute (so a terminal or browser window opened later stays
+  # where you are, at the default width).
+  # `background`: open without taking focus. Find app ids with
+  # `niri msg windows` or `niri msg pick-window`.
+  workspaceApps = [
+    {
+      workspace = "1";
+      appId = ''^dev\.zed\.Zed$'';
+      command = "zeditor";
+    }
+    {
+      workspace = "2";
+      appId = ''^com\.mitchellh\.ghostty$'';
+      command = "ghostty";
+      startupOnly = true;
+    }
+    {
+      workspace = "3";
+      appId = "^sublime_merge$";
+      command = "sublime_merge";
+    }
+    {
+      workspace = "4";
+      appId = "^microsoft-edge$"; # not its PWAs (msedge-<id>-Default)
+      command = "microsoft-edge";
+      startupOnly = true;
+    }
+    {
+      # Teams PWA: the id is per install, see ../favorite-apps.nix
+      workspace = "5";
+      appId = "^msedge-ompifgpmddkgmclendfeacglnodjjndh-Default$";
+      command = "microsoft-edge --profile-directory=Default --app-id=ompifgpmddkgmclendfeacglnodjjndh";
+      background = true;
+    }
+    {
+      workspace = "10";
+      appId = "^spotify$";
+      command = "spotify";
+      background = true;
+    }
+  ];
+
+  workspaceKdl = lib.concatMapStrings (w: ''
+    workspace "${w}"
+  '') workspaces;
+
+  workspaceAppsKdl = lib.concatMapStrings (
+    {
+      workspace,
+      appId,
+      command,
+      startupOnly ? false,
+      background ? false,
+    }:
+    ''
+      spawn-sh-at-startup ${builtins.toJSON command}
+      window-rule {
+          match app-id=r#"${appId}"#${lib.optionalString startupOnly " at-startup=true"}
+          open-on-workspace "${workspace}"
+          open-maximized true${lib.optionalString background "\n    open-focused false"}
+      }
+    ''
+  ) workspaceApps;
+
   configKdl = ''
     input {
         keyboard {
@@ -118,6 +190,8 @@ let
         open-floating true
     }
 
+    ${workspaceKdl}
+    ${workspaceAppsKdl}
     include "binds.kdl"
 
     ${lib.concatMapStringsSep "\n" (f: ''include optional=true "dms/${f}.kdl"'') dmsFragments}

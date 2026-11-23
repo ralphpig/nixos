@@ -30,7 +30,7 @@
 
   # Session GDM autologins into at boot ("gnome", "hyprland" or "niri"). Set to null
   # to autologin into whichever session was used last instead.
-  services.displayManager.defaultSession = "gnome";
+  services.displayManager.defaultSession = "niri";
 
   networking.hostName = "ralphpig-nixos-zfs";
 
