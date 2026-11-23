@@ -18,6 +18,16 @@ in
     places-status-indicator
   ];
 
+  # Terminal (Super+Return below). Colors and font size come from Stylix.
+  programs.ghostty = {
+    enable = true;
+    settings = {
+      # Stylix sets the regular monospace build; keep the term-spaced one
+      # (what GNOME Console used)
+      font-family = lib.mkForce "Iosevka Ralphpig Term";
+    };
+  };
+
   dconf.settings = {
     # Appearance
     "org/gnome/desktop/interface" = {
@@ -67,7 +77,7 @@ in
       last-selected-power-profile = "performance";
       favorite-apps = [
         "org.gnome.Nautilus.desktop"
-        "org.gnome.Console.desktop"
+        "com.mitchellh.ghostty.desktop"
         "dev.zed.Zed.desktop"
         "sublime_text.desktop"
         "sublime_merge.desktop"
@@ -99,11 +109,6 @@ in
         "_storage_free_"
         "_memory_swap_usage_"
       ];
-    };
-
-    # Application
-    "org/gnome/Console" = {
-      custom-font = "Iosevka Ralphpig Term 10";
     };
 
     # Not used
@@ -172,7 +177,7 @@ in
     "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
       name = "Open Terminal";
       binding = "<Super>Return";
-      command = "kgx";
+      command = "ghostty";
     };
   };
 }

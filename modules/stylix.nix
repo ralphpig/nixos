@@ -15,7 +15,7 @@
   stylix = {
     enable = true;
     polarity = "dark";
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-macchiato.yaml";
+    base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
 
     # Wallpaper only; the palette comes from base16Scheme above. Stylix copies
     # this into the store (replaces the live-path wallpaper in desktop/gnome).
@@ -34,16 +34,26 @@
     # Themed by hand in hosts/ralphpig-nixos-zfs/boot.nix
     targets.grub.enable = false;
     targets.plymouth.enable = false;
+
+    # Overlays rebuild gnome-shell, gtksourceview and nixos-icons (and all
+    # their dependents) from source on every scheme change. Only costs the
+    # themed GDM login screen and recolored NixOS logo; the desktop shell is
+    # themed via home-manager and gtksourceview styles via ~/.local/share.
+    overlays.enable = false;
   };
 
   home-manager.sharedModules = [
     (
       { config, ... }:
       let
-        # Stylix's GNOME Shell theme, rebuilt with GNOME's stock dark
-        # $background_mix_factor (9%) instead of Stylix's 0%. At 0%, unchecked
-        # buttons (e.g. quick settings toggles) are the exact same color as
-        # the menu behind them, so they look like they have no background.
+        # Stylix's GNOME Shell theme, rebuilt with two fixes:
+        # - GNOME's stock dark $background_mix_factor (9%) instead of Stylix's
+        #   0%. At 0%, unchecked buttons (e.g. quick settings toggles) are the
+        #   exact same color as the menu behind them.
+        # - Compile GNOME's dark stylesheet when polarity is dark. Stylix always
+        #   compiles the light one, whose light-mode logic darkens things a
+        #   dark theme should lighten (quick settings arrow buttons, hovers).
+        variant = if config.stylix.polarity == "dark" then "dark" else "light";
         shellTheme =
           (pkgs.callPackage "${inputs.stylix}/modules/gnome/theme.nix" {
             inherit (config.lib.stylix) colors;
@@ -53,6 +63,20 @@
               postPatch = old.postPatch + ''
                 substituteInPlace data/theme/gnome-shell-sass/_colors.scss \
                   --replace-fail '$background_mix_factor: 0%;' '$background_mix_factor: 9%;'
+                # Only the dark stylesheet uses this (privacy indicator);
+                # Stylix's colors file just defines the light one ($orange_4)
+                echo '$orange_3: ${config.lib.stylix.colors.withHashtag.base09};' \
+                  >>data/theme/gnome-shell-sass/_colors.scss
+              '';
+              # Same as Stylix's buildPhase, but with the chosen variant; the
+              # output is still named gnome-shell-light.css for its installPhase
+              buildPhase = ''
+                sass data/theme/gnome-shell-${variant}.scss \
+                  >data/theme/gnome-shell-light.css
+                cp data/theme/gnome-shell-{light,dark}.css
+                glib-compile-resources \
+                  --sourcedir=data/theme \
+                  data/gnome-shell-theme.gresource.xml
               '';
             });
       in
