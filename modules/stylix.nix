@@ -18,8 +18,8 @@
     base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
 
     # Wallpaper only; the palette comes from base16Scheme above. Stylix copies
-    # this into the store (replaces the live-path wallpaper in desktop/gnome).
-    image = ../wallpapers/landscape/prairie-mountain-tree.png;
+    # this into the store. Also used by desktop/hyprland and GNOME's lock screen.
+    image = ../wallpapers/train_car.png;
 
     cursor = {
       package = pkgs.bibata-cursors;

@@ -1,5 +1,6 @@
-# GNOME user settings (home-manager side). Imported by ./nixos.nix on NixOS;
-# also usable on its own with standalone home-manager on any GNOME system.
+# GNOME user settings (home-manager side). Imported by ./nixos.nix on NixOS.
+# Expects Stylix in home-manager (config.stylix.image); for standalone use,
+# import inputs.stylix.homeModules.stylix alongside this.
 {
   config,
   lib,
@@ -8,8 +9,8 @@
 }:
 with lib.hm.gvariant;
 let
-  # Live path into the repo checkout (not a store copy), like home/dotfiles.nix
-  wallpaper = "file://${config.my.repoDir}/wallpapers/train-car.png";
+  # Same image Stylix uses for the desktop background (modules/stylix.nix)
+  wallpaper = "file://${config.stylix.image}";
 in
 {
   home.packages = with pkgs.gnomeExtensions; [
@@ -18,29 +19,7 @@ in
     places-status-indicator
   ];
 
-  # Terminal (Super+Return below). Colors and font size come from Stylix.
-  programs.ghostty = {
-    enable = true;
-    settings = {
-      # Stylix sets the regular monospace build; keep the term-spaced one
-      # (what GNOME Console used)
-      font-family = lib.mkForce "Iosevka Ralphpig Term";
-
-      # Vim-style splits (on top of the defaults: Ctrl-Shift-O/E to split
-      # right/down, Ctrl-Shift-Enter to zoom). Ghostty takes these keys
-      # before the shell, so zsh's Alt-H (help) / Alt-L (lowercase) are lost.
-      keybind = [
-        "alt+h=goto_split:left"
-        "alt+j=goto_split:down"
-        "alt+k=goto_split:up"
-        "alt+l=goto_split:right"
-        "alt+shift+h=resize_split:left,10"
-        "alt+shift+j=resize_split:down,10"
-        "alt+shift+k=resize_split:up,10"
-        "alt+shift+l=resize_split:right,10"
-      ];
-    };
-  };
+  # Terminal (Super+Return below) is Ghostty, configured in home/ghostty.nix
 
   dconf.settings = {
     # Appearance
@@ -89,6 +68,9 @@ in
 
     "org/gnome/shell" = {
       last-selected-power-profile = "performance";
+      # GNOME hides Log Out when there's only one user; needed to get back to
+      # GDM's session picker (GNOME <-> Hyprland)
+      always-show-log-out = true;
       favorite-apps = [
         "org.gnome.Nautilus.desktop"
         "com.mitchellh.ghostty.desktop"

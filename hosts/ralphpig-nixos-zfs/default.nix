@@ -21,8 +21,15 @@
     # ../../modules/llm/ollama.nix
     # ../../modules/llm/llama-cpp-prism.nix
 
+    # Both desktops are installed; switch by logging out and picking one from
+    # GDM's session menu (gear icon). GDM itself lives in the GNOME module.
     ../../desktop/gnome/nixos.nix
+    ../../desktop/hyprland/nixos.nix
   ];
+
+  # Session GDM autologins into at boot ("gnome" or "hyprland"). Set to null
+  # to autologin into whichever session was used last instead.
+  services.displayManager.defaultSession = "gnome";
 
   networking.hostName = "ralphpig-nixos-zfs";
 

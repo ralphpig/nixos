@@ -17,5 +17,9 @@
     age
     sops
     ssh-to-age
+
+    # Ghostty (home/ghostty.nix) sets TERM=xterm-ghostty; install its terminfo
+    # system-wide so other users (`su -`, `sudo -i`, root) can find it.
+    ghostty.terminfo
   ];
 }
