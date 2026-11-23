@@ -5,7 +5,8 @@
   "fontFamily": "Iosevka Ralphpig Proportional",
   "monoFontFamily": "Iosevka Ralphpig",
   "dmsWindowsFloatingSeeded": [
-    "hyprland"
+    "hyprland",
+    "niri"
   ],
   "configVersion": 42,
   "interfaceStyle": "expressive",
@@ -262,7 +263,9 @@
           "workspaceAppIconSizeOffset": 0,
           "showOccupiedWorkspacesOnly": false,
           "showSpecialWorkspaces": false,
-          "background": false
+          "background": false,
+          "showWorkspacePadding": false,
+          "workspacePaddingCount": 6
         },
         {
           "id": "focusedWindow",
@@ -481,7 +484,9 @@
       "hoverPopoutDelay": 150,
       "dot": true,
       "islandNotch": true,
-      "islandAlongOffset": 0
+      "islandAlongOffset": 0,
+      "islandCompactThickness": 38,
+      "islandSatelliteGap": 12
     }
   ],
   "fixedRadius": 8,
@@ -539,7 +544,7 @@
   },
   "enableRippleEffects": true,
   "launcherStyle": "full",
-  "blurBorderEnabled": false,
+  "blurBorderEnabled": true,
   "widgetBackgroundColor": "default",
   "widgetColorMode": "default",
   "barElevationEnabled": false,
@@ -768,5 +773,14 @@
   "notificationCompactMode": false,
   "osdMediaPlaybackEnabled": false,
   "osdPosition": 5,
-  "osdAlwaysShowValue": false
+  "osdAlwaysShowValue": false,
+  "displayProfileAutoSelect": true,
+  "blurEnabled": false,
+  "blurBorderSeeded": true,
+  "blurStrength": 0,
+  "niriLayoutRadiusOverride": 6,
+  "floatingWindowSyncGlobal": true,
+  "floatingWindowTransparency": 1,
+  "floatingWindowForegroundTransparency": 1,
+  "textRenderQuality": 0
 }

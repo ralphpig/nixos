@@ -56,6 +56,7 @@ Pick the desktop in `hosts/<hostname>/default.nix`:
 ```nix
 ../../desktop/gnome/nixos.nix
 # ../../desktop/hyprland/nixos.nix
+# ../../desktop/niri/nixos.nix
 ```
 
 A new desktop is a new `desktop/<name>/` folder with a `nixos.nix` (system side,
