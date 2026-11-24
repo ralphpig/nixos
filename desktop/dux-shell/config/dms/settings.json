@@ -12,7 +12,7 @@
   "interfaceStyle": "expressive",
   "density": "comfortable",
   "currentThemeCategory": "custom",
-  "radiusStrength": 35,
+  "radiusStrength": 12,
   "focusRingWidth": 1.5,
   "focusRingEnabled": true,
   "focusRingColor": "primary",
@@ -66,7 +66,7 @@
       "trashFileManager": "default",
       "trashCustomCommand": "",
       "magnification": false,
-      "magnificationScale": 130,
+      "magnificationScale": 145,
       "magnificationProfile": "parabolic",
       "magnificationExpand": false,
       "order": [],
@@ -79,7 +79,9 @@
         {
           "id": "dock_apps",
           "widgetId": "appsDock",
-          "enabled": true
+          "enabled": true,
+          "runningAppsCurrentWorkspace": false,
+          "appsDockColorizeActive": false
         },
         {
           "id": "dock_trash",
@@ -362,11 +364,11 @@
       "bottomGap": 0,
       "attachToScreenEdge": false,
       "followInterfaceStyle": false,
-      "transparency": 0.75,
+      "transparency": 0.8,
       "surfaceColor": "default",
       "surfaceCustomColor": "#6750A4",
-      "widgetFollowInterfaceStyle": true,
-      "widgetTransparency": 1,
+      "widgetFollowInterfaceStyle": false,
+      "widgetTransparency": 0,
       "squareCorners": false,
       "noBackground": false,
       "widgetStyle": "pills",
@@ -381,9 +383,9 @@
       "borderColor": "surfaceText",
       "borderOpacity": 1,
       "borderThickness": 1,
-      "widgetOutlineEnabled": false,
+      "widgetOutlineEnabled": true,
       "widgetOutlineColor": "primary",
-      "widgetOutlineOpacity": 1,
+      "widgetOutlineOpacity": 0.5,
       "widgetOutlineThickness": 1,
       "fontScale": 1,
       "iconScale": 1.25,
@@ -537,13 +539,14 @@
           "showSpecialWorkspaces": false,
           "showWorkspacePadding": false,
           "workspacePaddingCount": 6,
-          "workspaceIndicatorRoundness": 30,
-          "workspaceFocusedBorderEnabled": false,
-          "workspaceUnfocusedColorMode": "default",
+          "workspaceIndicatorRoundness": -1,
+          "workspaceFocusedBorderEnabled": true,
+          "workspaceUnfocusedColorMode": "sc",
           "workspaceOccupiedColorMode": "none",
-          "workspaceColorMode": "default",
+          "workspaceColorMode": "sc",
           "workspaceUnfocusedCustomColor": "#49454E",
-          "background": false
+          "background": false,
+          "workspaceFocusedBorderThickness": 1
         }
       ],
       "centerWidgets": [],
@@ -565,8 +568,8 @@
       "barLengthPercent": 80,
       "bottomGap": 0,
       "attachToScreenEdge": false,
-      "followInterfaceStyle": false,
-      "transparency": 0.9,
+      "followInterfaceStyle": true,
+      "transparency": 1,
       "surfaceColor": "default",
       "surfaceCustomColor": "#6750A4",
       "widgetFollowInterfaceStyle": true,
@@ -626,7 +629,7 @@
       "dot": false
     }
   ],
-  "fixedRadius": 8,
+  "fixedRadius": 5,
   "sectionDividerOpacity": 0.1,
   "hyprlandLayoutRadiusOverride": 4,
   "dashTabs": [
@@ -902,7 +905,7 @@
   "popupTransparency": 1,
   "foregroundLayerTransparency": 0.85,
   "blurForegroundLayers": true,
-  "blurLayerOutlineOpacity": 0.12,
+  "blurLayerOutlineOpacity": 0,
   "blurBorderOpacity": 0.85,
   "radiusMode": "scale",
   "controlCenterIconScale": 1,
@@ -927,5 +930,6 @@
   "frameBarInsetPadding": -1,
   "frameBlurEnabled": true,
   "frameMode": "connected",
-  "niriLayoutGapsOverride": 0
+  "niriLayoutGapsOverride": -1,
+  "niriLayoutBorderSize": 1
 }
