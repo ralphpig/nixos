@@ -32,26 +32,6 @@ in
 {
   imports = [ ./binds.nix ];
 
-  # Fix: clicking a bar widget again without moving the mouse reopened its
-  # popout instead of closing it. While a popout is open, Hyprland only
-  # delivers clicks to an allow-list of the shell's surfaces; the bar was
-  # only on it once the popout had keyboard focus, which with
-  # focus-follows-mouse needs pointer motion. So the click counted as
-  # "outside" (closing the popout) and also reached the bar (reopening it).
-  # Keep the bar on the list. Fails to build if upstream changes the line;
-  # then check whether it's fixed there and drop this.
-  # There's one shell package for every compositor, but only Hyprland
-  # uses this list.
-  programs.dank-material-shell.package =
-    inputs.dms.packages.${pkgs.stdenv.hostPlatform.system}.dms-shell.overrideAttrs
-      (old: {
-        postInstall = old.postInstall + ''
-          substituteInPlace $out/share/quickshell/dms/Widgets/DPopout.qml --replace-fail \
-            'return list.concat(transientWindows);' \
-            'return list.concat(transientWindows).concat(KeyboardFocus.barWindows);'
-        '';
-      });
-
   # Start the shell (../dux-shell) with the Hyprland session
   systemd.user.targets.dux-shell.Install.WantedBy = [ "hyprland-session.target" ];
 

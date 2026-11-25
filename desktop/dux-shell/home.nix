@@ -90,6 +90,35 @@ in
 
   programs.dank-material-shell = {
     enable = true;
+
+    # One package for every compositor, so all source patches go here. Each
+    # fails to build if upstream changes the line; then check whether it's
+    # fixed there and drop it.
+    #
+    # DPopout (Hyprland): clicking a bar widget again without moving the mouse
+    # reopened its popout instead of closing it. While a popout is open,
+    # Hyprland only delivers clicks to an allow-list of the shell's surfaces;
+    # the bar was only on it once the popout had keyboard focus, which with
+    # focus-follows-mouse needs pointer motion. So the click counted as
+    # "outside" (closing the popout) and also reached the bar (reopening it).
+    # Keep the bar on the list. Only Hyprland uses it.
+    #
+    # MprisController: use a stopped player when there's no other, so the media
+    # key and bar widget work with a freshly opened Spotify/Spotifast (stopped
+    # until something plays).
+    package =
+      inputs.dms.packages.${pkgs.stdenv.hostPlatform.system}.dms-shell.overrideAttrs
+        (old: {
+          postInstall = old.postInstall + ''
+            substituteInPlace $out/share/quickshell/dms/Widgets/DPopout.qml --replace-fail \
+              'return list.concat(transientWindows);' \
+              'return list.concat(transientWindows).concat(KeyboardFocus.barWindows);'
+            substituteInPlace $out/share/quickshell/dms/Services/MprisController.qml --replace-fail \
+              'availablePlayers.find(p => p.canControl && !isIdle(p)) ?? null;' \
+              'availablePlayers.find(p => p.canControl && !isIdle(p)) ?? availablePlayers.find(p => p.canControl) ?? null;'
+          '';
+        });
+
     systemd = {
       enable = true;
       target = "dux-shell.target";
