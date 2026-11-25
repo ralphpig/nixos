@@ -353,7 +353,17 @@
           "id": "vpn",
           "enabled": true
         },
-        "controlCenterButton"
+        {
+          "id": "controlCenterButton",
+          "enabled": true,
+          "showAudioIcon": false,
+          "showAudioPercent": false,
+          "showMicIcon": false,
+          "showMicPercent": false,
+          "showPrinterIcon": false,
+          "showIdleInhibitorIcon": true,
+          "showBluetoothIcon": false
+        }
       ],
       "spacing": 4,
       "innerPadding": -4,
@@ -912,7 +922,7 @@
   "containerSaturation": 100,
   "notificationCompactMode": false,
   "osdMediaPlaybackEnabled": false,
-  "osdPosition": 5,
+  "osdPosition": 7,
   "osdAlwaysShowValue": false,
   "displayProfileAutoSelect": true,
   "blurEnabled": true,
@@ -931,5 +941,17 @@
   "frameBlurEnabled": true,
   "frameMode": "connected",
   "niriLayoutGapsOverride": -1,
-  "niriLayoutBorderSize": 1
+  "niriLayoutBorderSize": 1,
+  "lockScreenFontFamily": "JetBrains Mono",
+  "powerMenuActions": [
+    "reboot",
+    "logout",
+    "poweroff",
+    "lock",
+    "suspend",
+    "restart",
+    "switchuser"
+  ],
+  "osdMediaVolumeEnabled": false,
+  "osdWorkspaceEnabled": false
 }
