@@ -17,6 +17,7 @@
     ../../modules/packages/ai.nix
     ../../modules/packages/work.nix
     ../../modules/packages/apps.nix
+    ../../modules/packages/spotifast.nix
 
     # ../../modules/llm/ollama.nix
     # ../../modules/llm/llama-cpp-prism.nix
