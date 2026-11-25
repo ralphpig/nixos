@@ -48,7 +48,9 @@ let
   # there at full width (like Super+F). `startupOnly`: only windows opened in
   # niri's first minute (so a terminal or browser window opened later stays
   # where you are, at the default width).
-  # `background`: open without taking focus. Find app ids with
+  # None of them take focus in that first minute, so login stays on workspace
+  # 1, where the keyring prompt opens.
+  # `background`: never take focus on opening. Find app ids with
   # `niri msg windows` or `niri msg pick-window`.
   workspaceApps = [
     {
@@ -106,6 +108,10 @@ let
           match app-id=r#"${appId}"#${lib.optionalString startupOnly " at-startup=true"}
           open-on-workspace "${workspace}"
           open-maximized true${lib.optionalString background "\n    open-focused false"}
+      }
+      window-rule {
+          match app-id=r#"${appId}"# at-startup=true
+          open-focused false
       }
     ''
   ) workspaceApps;
