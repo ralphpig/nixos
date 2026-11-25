@@ -15,6 +15,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Dux Shell (formerly DankMaterialShell), the desktop shell for Hyprland/niri.
+    # nixpkgs 26.05 only has 1.4.x; the stable branch tracks the latest 2.x.
+    dms = {
+      url = "github:duxlabs-dev/dux-shell/stable";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     elegant-grub2-themes = {
       url = "github:vinceliuice/Elegant-grub2-themes";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -17,12 +17,21 @@
     ../../modules/packages/ai.nix
     ../../modules/packages/work.nix
     ../../modules/packages/apps.nix
+    ../../modules/packages/spotifast.nix
 
     # ../../modules/llm/ollama.nix
     # ../../modules/llm/llama-cpp-prism.nix
 
+    # All desktops are installed; switch by logging out and picking one from
+    # GDM's session menu (gear icon). GDM itself lives in the GNOME module.
     ../../desktop/gnome/nixos.nix
+    ../../desktop/hyprland/nixos.nix
+    ../../desktop/niri/nixos.nix
   ];
+
+  # Session GDM autologins into at boot ("gnome", "hyprland" or "niri"). Set to null
+  # to autologin into whichever session was used last instead.
+  services.displayManager.defaultSession = "niri";
 
   networking.hostName = "ralphpig-nixos-zfs";
 

@@ -3,6 +3,7 @@
   imports = [
     ./common
     ./dotfiles.nix
+    ./ghostty.nix
   ];
 
   # Desktop-specific config (e.g. ../desktop/gnome/home.nix) is imported by the
