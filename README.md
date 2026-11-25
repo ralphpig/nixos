@@ -1,35 +1,48 @@
 # nixos
 
-My NixOS machine(s) and home-manager config in one flake.
+My NixOS machine(s) and home-manager config in one flake, in the dendritic
+pattern: every `.nix` file under `mod/` is a flake-parts module, loaded
+automatically by import-tree (except paths starting with `_`).
 
 ## Layout
 
 ```
-flake.nix                    # inputs (nixpkgs 26.05, nixpkgs-unstable, home-manager) + hosts
-hosts/<hostname>/            # one folder per machine
-  default.nix                #   imports, hostname, stateVersion, which desktop/modules
-  hardware-configuration.nix #   generated only (--no-filesystems), never hand-edited
-  storage.nix                #   hand-written: filesystems, swap, ZFS
-  boot.nix                   #   grub, plymouth, silent boot
-modules/                     # reusable NixOS modules
-  core.nix                   #   nix/nixpkgs settings, nh, locale, networking, user
-  home-manager.nix           #   wires home-manager in (main user + root)
-  services.nix  fonts.nix
-  packages/{cli,dev,ai,work,apps}.nix
-  llm/                       #   opt-in: ollama + open-webui, llama.cpp fork
-desktop/<name>/              # one folder per desktop environment
-  nixos.nix                  #   system side; also imports ./home.nix for the user
-  home.nix                   #   user side (dconf etc.); usable standalone
-desktop/dux-shell/           # the shell shared by hyprland and niri; imported by their nixos.nix
-home/
-  common/                    # portable zsh/git/neovim, applied to the user AND root
-  dotfiles.nix               # live symlinks: ~/.config/<app> -> ~/nixos/home/config/<app>
-  config/                    # app configs edited in place (zed, sublime, sql-formatter)
-  ralphpig.nix  root.nix     # per-user entry points
-wallpapers/                  # referenced live from the checkout (my.repoDir)
+flake.nix                    # inputs, and import-tree ./mod
+mod/
+  host/<hostname>/           # one per machine: hardware, and which features it uses
+    _hardware-configuration.nix  # generated only (--no-filesystems), never hand-edited
+    _storage.nix             #   hand-written: filesystems, swap, ZFS
+  user/<name>.nix            # one per user: account, and which features it uses
+  feat/                      # independent features: desktops, apps, dev tools
+  sys/                       # core system, on every host (`base`)
+    boot.nix                 #   grub, plymouth, silent boot; opt-in (`boot`), not in base
+    home-manager.nix         #   the only home-manager plumbing
+    shell/                   #   zsh, git, neovim: every user, root included
+wallpapers/
 ```
 
-The username is defined once in `flake.nix` and passed to modules as `username`.
+## Features
+
+A feature has a system half, a home half, or both:
+
+```nix
+{
+  flake.modules.nixos.foo = { pkgs, ... }: { };       # system; imported by hosts
+  flake.modules.homeManager.foo = { pkgs, ... }: { }; # home; imported by users
+}
+```
+
+- A feature with both must be listed in both the host and the user.
+- Packages go in the home half (`home.packages`). Tools everyone needs go in
+  `sys/util.nix`.
+- Importing is enabling; there are no `enable` options.
+- Features don't import other features (`flake.modules` doesn't deduplicate)
+  and don't name users.
+- `sys/` adds to `nixos.base` / `homeManager.base`, except `boot`, which a host
+  imports and overrides.
+- Stylix is optional: what a feature sets for it is guarded by
+  `options ? stylix`.
+
 `pkgs.unstable.<name>` gives a package from nixpkgs-unstable.
 
 ## Daily use
@@ -46,43 +59,27 @@ nix flake update      # bump inputs (then switch)
 System and home-manager config are applied together. There is no separate
 `home-manager switch`.
 
-App configs under `home/config/` are symlinked live into this repo, so changing
-settings in zed/sublime edits these files directly. Commit them like any other change.
+App configs in a feature's `config/` are symlinked live into this repo, so
+changing settings in zed/sublime edits these files directly. Commit them like any
+other change.
 
-## Switching desktops
-
-Pick the desktop in `hosts/<hostname>/default.nix`:
-
-```nix
-../../desktop/gnome/nixos.nix
-# ../../desktop/hyprland/nixos.nix
-# ../../desktop/niri/nixos.nix
-```
-
-A new desktop is a new `desktop/<name>/` folder with a `nixos.nix` (system side,
-importing its `home.nix` via `home-manager.users.${username}.imports`) and a
-`home.nix` (user side). Two desktops can be enabled at once and chosen at the login screen.
-
-## Optional modules
-
-Uncomment in the host's `default.nix`:
-
-- `modules/llm/ollama.nix`: ollama (ROCm) + Open WebUI on http://localhost:10000
-- `modules/llm/llama-cpp-prism.nix`: PrismML llama.cpp fork (ternary GGUF types)
+Pick the boot desktop with `defaultSession` in the host, or any of them at the
+login screen. Optional features (`ollama` in the host, `llama-cpp-prism` in the
+user) are commented out there.
 
 ## Fresh install
 
 From the NixOS installer, after partitioning, creating the ZFS pool/datasets
-(see `hosts/<hostname>/storage.nix`) and mounting everything under `/mnt`:
+(see `mod/host/<hostname>/_storage.nix`) and mounting everything under `/mnt`:
 
 ```sh
 export NIX_CONFIG="extra-experimental-features = nix-command flakes"
 nixos-generate-config --root /mnt --show-hardware-config --no-filesystems \
-  > /tmp/hardware-configuration.nix
+  > /tmp/_hardware-configuration.nix
 
 git clone https://github.com/ralphpig/nixos /mnt/home/ralphpig/nixos   # https: no ssh keys yet
-cp /tmp/hardware-configuration.nix /mnt/home/ralphpig/nixos/hosts/<hostname>/
-# new machine: copy an existing hosts/ folder, then adjust storage.nix, hostname,
+cp /tmp/_hardware-configuration.nix /mnt/home/ralphpig/nixos/mod/host/<hostname>/
+# new machine: copy an existing mod/host/ folder, then adjust _storage.nix, hostname,
 # and networking.hostId (head -c4 /dev/urandom | od -A none -t x4)
 
 nixos-install --flake /mnt/home/ralphpig/nixos#<hostname>
@@ -97,11 +94,4 @@ cd ~/nixos && git remote set-url origin git@github.com:ralphpig/nixos.git
 ```
 
 Reinstalling an existing host can skip regenerating the hardware config.
-The `~/.config` symlinks in `home/dotfiles.nix` resolve once the repo is at `~/nixos`.
-
-## Non-NixOS
-
-`home/common` and `desktop/*/home.nix` don't depend on NixOS. To use them with
-standalone home-manager, add a `homeConfigurations."ralphpig@<host>"` output to
-`flake.nix` that imports `home/common`, `home/dotfiles.nix` and any desktop
-`home.nix`, setting `home.username`/`home.homeDirectory` there.
+The `~/.config` symlinks to `mod/feat/*/config` resolve once the repo is at `~/nixos`.

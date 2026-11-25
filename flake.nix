@@ -5,6 +5,12 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
+    import-tree.url = "github:denful/import-tree";
+
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -28,15 +34,7 @@
     };
   };
 
-  outputs =
-    { nixpkgs, ... }@inputs:
-    let
-      username = "ralphpig";
-    in
-    {
-      nixosConfigurations.ralphpig-nixos-zfs = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs username; };
-        modules = [ ./hosts/ralphpig-nixos-zfs ];
-      };
-    };
+  # Every .nix file under mod/ is a flake-parts module, except paths starting
+  # with "_".
+  outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./mod);
 }
