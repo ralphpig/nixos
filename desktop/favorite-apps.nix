@@ -10,7 +10,7 @@
   "insomnia.desktop"
   "microsoft-edge.desktop"
   "msedge-ompifgpmddkgmclendfeacglnodjjndh-Default.desktop" # Teams
-  "spotify.desktop"
+  "spotifast.desktop"
   # Edge PWAs (Apps > Install this site as an app). The id is per install:
   # after reinstalling one, look up the new file name with
   #   grep -H '^Name=' ~/.local/share/applications/msedge-*.desktop

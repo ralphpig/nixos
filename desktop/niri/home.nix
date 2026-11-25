@@ -84,8 +84,8 @@ let
     }
     {
       workspace = "10";
-      appId = "^spotify$";
-      command = "spotify";
+      appId = "^spotifast$";
+      command = "spotifast";
       background = true;
     }
   ];

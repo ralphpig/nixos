@@ -9,6 +9,9 @@ in
 {
   programs.nix-ld.enable = true;
 
+  # Open spotify: links here rather than in the official client
+  xdg.mime.defaultApplications."x-scheme-handler/spotify" = "spotifast.desktop";
+
   environment.systemPackages = [
     (symlinkJoin {
       name = "spotifast-${spotifast.version}";
